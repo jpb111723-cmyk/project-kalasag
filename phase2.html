@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Phase 2 · Project KALASAG</title>
+<style>
+:root{--bg:#12303f;--panel:#1b4152;--ink:#e9f1f4;--mute:#a9c3cd;--amber:#f2b441;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.5 system-ui,"Segoe UI",sans-serif}
+main{max-width:640px;margin:0 auto;padding:20px 16px 48px}
+h1,h2{font-family:Georgia,serif;line-height:1.2}h1{font-size:1.9rem;margin:.2em 0}h2{font-size:1.2rem;margin:1.4em 0 .4em}
+.card{background:var(--panel);border-radius:12px;padding:12px 14px;margin:10px 0}
+label.i{display:flex;gap:10px;padding:8px 0;cursor:pointer;align-items:flex-start}
+input[type=radio]{width:22px;height:22px;flex:none;accent-color:var(--amber);margin-top:2px}
+input[type=number]{width:100%;font:inherit;color:var(--ink);background:#0d2230;border:2px solid #2d5e74;border-radius:8px;padding:9px 10px;margin:4px 0 12px}
+a{color:var(--amber)}.mute{color:var(--mute);font-size:.9rem}
+button{font:inherit;font-weight:700;border:0;border-radius:10px;padding:12px 16px;cursor:pointer;background:var(--amber);color:#12303f;margin:6px 6px 0 0}
+button.sm{float:right;padding:6px 12px;background:var(--panel);color:var(--ink);border:2px solid #2d5e74}
+:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+#kw{font:700 1.15rem/1.4 Georgia,serif}
+</style>
+</head>
+<body>
+<main>
+<button id="lg" class="sm"></button>
+<p class="mute"><a href="index.html" data-k="back"></a></p>
+<h1 data-k="h1"></h1>
+<p data-k="intro"></p>
+<div class="card">
+<label for="g" data-k="g"></label><input id="g" type="number" min="0" max="30" inputmode="numeric">
+<label for="w" data-k="w"></label><input id="w" type="number" min="0" max="60" inputmode="numeric">
+<label for="f" data-k="f"></label><input id="f" type="number" min="0" max="60" inputmode="numeric">
+<label for="m" data-k="m"></label><input id="m" type="number" min="0" max="90" inputmode="numeric">
+<b data-k="r"></b><div id="rl"></div>
+</div>
+<button id="go" data-k="go"></button>
+<div id="out" role="status"></div>
+<h2 data-k="k"></h2>
+<div class="card"><p id="kw"></p><button id="more" class="sm" data-k="more"></button><div style="clear:both"></div></div>
+</main>
+<script src="profile.js"></script>
+<script>
+const T={en:{back:"Back to menu",h1:"Phase 2: Reality check",intro:"Guess first, then count. The gap between the two is the point.",
+g:"How many days could your household last with no rescue, no shops and no help?",w:"Days of drinking water at home",f:"Days of ready-to-eat food at home",m:"Days of regular medicines (0 if none needed)",
+r:"If help is late, who do you count on?",go:"Check my reality",k:"Kwentuhan sa Kahandaan",more:"Another question",lg:"Filipino",
+next:"Next: build your go bag"},
+tl:{back:"Bumalik sa menu",h1:"Phase 2: Pagsusuri ng realidad",intro:"Manghula muna, saka magbilang. Ang agwat ng dalawa ang punto.",
+g:"Ilang araw kayang tumagal ng inyong sambahayan nang walang rescue, tindahan o tulong?",w:"Ilang araw ng inuming tubig sa bahay",f:"Ilang araw ng pagkaing handa nang kainin sa bahay",m:"Ilang araw ng regular na gamot (0 kung wala)",
+r:"Kung maantala ang tulong, kanino kayo aasa?",go:"Suriin ang aking realidad",k:"Kwentuhan sa Kahandaan",more:"Isa pang tanong",lg:"English",
+next:"Susunod: buuin ang inyong go bag"}};
+const R=[["Rescue or relief goods","Rescue o relief goods"],["My own supplies","Sarili kong gamit"],["Relatives elsewhere","Kamag-anak sa ibang lugar"]];
+const K=[["In the last big flood, what did your family do first? Would you do the same now?","Sa huling malaking baha, ano ang unang ginawa ng pamilya ninyo? Gagawin pa rin ba ninyo ito ngayon?"],
+["“Babangon din tayo” is a fine attitude. What is the plan for the 72 hours before that?","Magandang pananaw ang “babangon din tayo.” Ano ang plano para sa unang 72 oras bago iyon?"],
+["Who on your street lives alone or can’t walk far? Who will check on them?","Sino sa inyong kalye ang nag-iisa o hindi makalakad nang malayo? Sino ang titingin sa kanila?"],
+["Ondoy survivors waited on their roofs for over 24 hours without food or water. What would be in your hands up there?","Naghintay sa bubong nang mahigit 24 oras ang ilang nakaligtas sa Ondoy, walang pagkain o tubig. Ano ang hawak ninyo roon?"]];
+const M={en:{guess:(g,a)=>`You guessed ${g} day(s). You have ${a}.`,ok:"That covers the 72 hours (3 days) recommended in the government go-bag guidance.",short:s=>`That is ${s} day(s) short of the 72-hour guideline. Cheap to fix, expensive to ignore.`,rescue:"You are counting on rescue. One Ondoy survivor waited on her roof for more than 24 hours without food or water."},
+tl:{guess:(g,a)=>`Hinulaan ninyo ay ${g} araw. Mayroon kayong ${a}.`,ok:"Sapat ito para sa 72 oras (3 araw) na inirerekomenda ng gabay ng pamahalaan para sa go bag.",short:s=>`Kulang ito ng ${s} araw sa 72-oras na gabay. Mura ayusin, magastos balewalain.`,rescue:"Umaasa kayo sa rescue. Isang nakaligtas sa Ondoy ang naghintay sa kanyang bubong nang mahigit 24 oras na walang pagkain o tubig."}};
+const $=s=>document.querySelector(s);
+const p2=KP.get().p2||{};
+let L=KP.lang(),rel=p2.reliance??-1,k=Math.random()*K.length|0;
+const i=()=>L==="en"?0:1;
+["g:guess","w:water","f:food","m:meds"].forEach(x=>{const[a,b]=x.split(":");if(p2[b]!==undefined)$("#"+a).value=p2[b]});
+function draw(){
+ const t=T[L];document.documentElement.lang=L;
+ document.querySelectorAll("[data-k]").forEach(e=>e.textContent=t[e.dataset.k]);$("#lg").textContent=t.lg;
+ $("#rl").innerHTML=R.map((r,n)=>`<label class="i"><input type="radio" name="r" value="${n}" ${rel===n?"checked":""}><span>${r[i()]}</span></label>`).join("");
+ document.querySelectorAll("input[name=r]").forEach(e=>e.onchange=()=>{rel=+e.value});
+ $("#kw").textContent=K[k][i()];$("#out").innerHTML="";
+}
+$("#lg").onclick=()=>{L=L==="en"?"tl":"en";KP.setLang(L);draw()};
+$("#more").onclick=()=>{k=(k+1)%K.length;$("#kw").textContent=K[k][i()]};
+$("#go").onclick=()=>{
+ const n=id=>Math.max(0,Number($("#"+id).value)||0),g=n("g"),w=n("w"),f=n("f"),m=n("m"),a=Math.min(w,f),s=Math.max(0,3-a),t=M[L];
+ KP.set("p2",{guess:g,water:w,food:f,meds:m,actual:a,short:s,reliance:rel,done:true});
+ $("#out").innerHTML=`<div class="card"><p><b>${t.guess(g,a)}</b></p><p>${s?t.short(s):t.ok}</p>${rel===0?`<p>${t.rescue}</p>`:""}</div><p><a href="gobag.html">${T[L].next}</a></p>`;
+ $("#out").scrollIntoView();
+};
+draw();
+</script>
+</body>
+</html>

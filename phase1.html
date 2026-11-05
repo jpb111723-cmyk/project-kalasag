@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Phase 1 · Project KALASAG</title>
+<style>
+:root{--bg:#12303f;--panel:#1b4152;--ink:#e9f1f4;--mute:#a9c3cd;--amber:#f2b441;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.5 system-ui,"Segoe UI",sans-serif}
+main{max-width:640px;margin:0 auto;padding:20px 16px 48px}
+h1,h2{font-family:Georgia,serif;line-height:1.2}h1{font-size:1.9rem;margin:.2em 0}h2{font-size:1.2rem;margin:1.4em 0 .4em}
+.card{background:var(--panel);border-radius:12px;padding:12px 14px;margin:10px 0}
+label.i{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #2d5e74;cursor:pointer;align-items:flex-start}
+label.i:last-child{border:0}
+input[type=checkbox],input[type=radio]{width:22px;height:22px;flex:none;accent-color:var(--amber);margin-top:2px}
+a{color:var(--amber)}.mute{color:var(--mute);font-size:.9rem}
+button{font:inherit;font-weight:700;border:0;border-radius:10px;padding:12px 16px;cursor:pointer;background:var(--amber);color:#12303f;margin:6px 6px 0 0}
+button.sm{float:right;padding:6px 12px;background:var(--panel);color:var(--ink);border:2px solid #2d5e74}
+:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+</style>
+</head>
+<body>
+<main>
+<button id="lg" class="sm"></button>
+<p class="mute"><a href="index.html" data-k="back"></a></p>
+<h1 data-k="h1"></h1>
+<p data-k="intro"></p>
+<div class="card" data-k="link"></div>
+<h2 data-k="s1"></h2><div class="card" id="haz"></div>
+<h2 data-k="s2"></h2><div class="card" id="vul"></div>
+<h2 data-k="s3"></h2><div id="qz"></div>
+<button id="make" data-k="make"></button>
+<div id="out" role="status"></div>
+</main>
+<script src="profile.js"></script>
+<script>
+const T={en:{back:"Back to menu",h1:"Phase 1: Know your risk",intro:"Three quick steps. Your answers stay on this device and shape your simulations.",
+link:"Heavy rain, flooded streets and leptospirosis are connected: the DOH counted at least 220 leptospirosis deaths from January to early August 2026.",
+s1:"What is near your home?",s2:"Who lives with you?",s3:"Warning check",make:"Make my risk card",lg:"Filipino",
+card:"Your risk card",score:"Warning check: ",pack:"Pack extras for: ",pick:"Tick at least one hazard above.",next:"Next: Phase 2"},
+tl:{back:"Bumalik sa menu",h1:"Phase 1: Alamin ang inyong panganib",intro:"Tatlong mabilis na hakbang. Nananatili sa device na ito ang inyong mga sagot at huhubog ito sa inyong mga simulation.",
+link:"Magkakaugnay ang malakas na ulan, baha at leptospirosis: nakapagtala ang DOH ng hindi bababa sa 220 pagkamatay sa leptospirosis mula Enero hanggang unang bahagi ng Agosto 2026.",
+s1:"Ano ang malapit sa inyong tahanan?",s2:"Sino ang kasama ninyo sa bahay?",s3:"Pagsusuri ng mga babala",make:"Gawin ang aking risk card",lg:"English",
+card:"Ang inyong risk card",score:"Pagsusuri ng babala: ",pack:"Maghanda ng dagdag para sa: ",pick:"Pumili ng kahit isang panganib sa itaas.",next:"Susunod: Phase 2"}};
+const H={flood:["Floods","Baha"],fault:["Active fault nearby","May aktibong fault sa malapit"],coast:["Coast or storm surge","Baybayin o storm surge"],slope:["Steep slope or landslide","Matarik na lupa o landslide"],volcano:["Volcano nearby","May bulkan sa malapit"]};
+const A={flood:["Know your barangay’s evacuation center and flood warning plan. Avoid wading in floodwater.","Alamin ang evacuation center at plano ng babala sa baha ng inyong barangay. Iwasang lumusong sa baha."],
+fault:["Practice Drop, Cover and Hold. Use stairs, never elevators.","Magsanay ng Drop, Cover at Hold. Hagdan ang gamitin, hindi elevator."],
+coast:["After a strong quake or an official warning, move to higher ground.","Pagkatapos ng malakas na lindol o opisyal na babala, lumikas sa mataas na lugar."],
+slope:["Ask your barangay whether your area is landslide-prone and where to go during heavy rain.","Itanong sa barangay kung landslide-prone ang inyong lugar at saan pupunta kapag malakas ang ulan."],
+volcano:["Follow PHIVOLCS advisories and your local evacuation instructions.","Sundin ang mga abiso ng PHIVOLCS at ang utos ng lokal na pamahalaan sa paglikas."]};
+const V={infant:["Infant or toddler","Sanggol o bata"],elder:["Elderly","Matanda"],preg:["Pregnant","Buntis"],pwd:["Person with a disability","May kapansanan"],pet:["Pet","Alagang hayop"]};
+const Q=[{q:["A red rainfall warning means:","Ang pulang rainfall warning ay nangangahulugang:"],a:2,o:[["Be aware","Mag-ingat at magmasid"],["Be ready","Maghanda"],["Act now","Kumilos na"]]},
+{q:["Which color is 15 to 30 mm of rain in an hour?","Anong kulay ang 15 hanggang 30 mm ng ulan sa loob ng isang oras?"],a:1,o:[["Yellow","Dilaw"],["Orange","Kahel"],["Red","Pula"]]},
+{q:["After wading through floodwater, get checked:","Pagkatapos lumusong sa baha, magpatingin:"],a:0,o:[["Within 24 to 48 hours, even with no symptoms","Sa loob ng 24 hanggang 48 oras, kahit walang sintomas"],["Only once a fever starts, and not before","Kapag nilagnat na lang, hindi bago iyon"],["Two weeks later, once the mud has dried","Pagkalipas ng dalawang linggo, kapag tuyo na ang putik"]]}];
+const $=s=>document.querySelector(s);
+const p1=KP.get().p1||{};
+let L=KP.lang(),haz=new Set(p1.hazards||[]),vul=new Set(p1.vuln||[]),ans=p1.answers||[];
+const i=()=>L==="en"?0:1;
+function chk(o,set,k){return Object.keys(o).map(x=>`<label class="i"><input type="checkbox" data-${k}="${x}" ${set.has(x)?"checked":""}><span>${o[x][i()]}</span></label>`).join("")}
+function draw(){
+ const t=T[L];document.documentElement.lang=L;
+ document.querySelectorAll("[data-k]").forEach(e=>e.textContent=t[e.dataset.k]);$("#lg").textContent=t.lg;
+ $("#haz").innerHTML=chk(H,haz,"h");$("#vul").innerHTML=chk(V,vul,"v");
+ $("#qz").innerHTML=Q.map((q,n)=>`<div class="card"><b>${q.q[i()]}</b>${q.o.map((o,m)=>`<label class="i"><input type="radio" name="q${n}" value="${m}" ${ans[n]===m?"checked":""}><span>${o[i()]}</span></label>`).join("")}</div>`).join("");
+ document.querySelectorAll("[data-h]").forEach(e=>e.onchange=()=>{e.checked?haz.add(e.dataset.h):haz.delete(e.dataset.h)});
+ document.querySelectorAll("[data-v]").forEach(e=>e.onchange=()=>{e.checked?vul.add(e.dataset.v):vul.delete(e.dataset.v)});
+ document.querySelectorAll("input[type=radio]").forEach(e=>e.onchange=()=>{ans[+e.name.slice(1)]=+e.value});
+}
+$("#lg").onclick=()=>{L=L==="en"?"tl":"en";KP.setLang(L);$("#out").innerHTML="";draw()};
+$("#make").onclick=()=>{
+ const t=T[L];
+ if(!haz.size){$("#out").innerHTML=`<div class="card">${t.pick}</div>`;return}
+ const sc=Q.filter((q,n)=>ans[n]===q.a).length;
+ KP.set("p1",{hazards:[...haz],vuln:[...vul],answers:ans,score:sc,done:true});
+ $("#out").innerHTML=`<h2>${t.card}</h2><div class="card">${[...haz].map(h=>`<p><b>${H[h][i()]}</b><br>${A[h][i()]}</p>`).join("")}`+
+ (vul.size?`<p><b>${t.pack}</b>${[...vul].map(v=>V[v][i()]).join(", ")}</p>`:"")+
+ `<p class="mute">${t.score}${sc} / ${Q.length}</p></div><p><a href="phase2.html">${t.next}</a> · <a href="index.html">${t.back}</a></p>`;
+ $("#out").scrollIntoView();
+};
+draw();
+</script>
+</body>
+</html>
