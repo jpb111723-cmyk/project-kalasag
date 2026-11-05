@@ -15,11 +15,17 @@ window.KP={
   const home=/(^|\/)(index\.html)?$/.test(location.pathname);
   if(!home&&!KP.agreed()){location.replace("index.html");return}
   const st=document.createElement("style");
-  st.textContent=":root{--bg:#0f1b45;--panel:#19285f;--ink:#f4f1ea;--mute:#b6bddb;--amber:#f5b335;--orange:#ee8a2b;--red:#d8452f}"+
+  st.textContent='@font-face{font-family:"KalasagBold";src:url(fonts/kalasag-bold.woff) format("woff");font-weight:700 800;font-display:swap}'+
+  ":root{--font:'KalasagBold','Arial Rounded MT Bold','Trebuchet MS','Segoe UI',Verdana,sans-serif}"+
+  "body{font-family:system-ui,'Segoe UI',Roboto,Arial,sans-serif;font-weight:600}"+
+  "h1,h2,h3,button,.btn,.tag,.chip,.num,.cnt,.go,.it,.slogan,.stage b,.kbar a,.nextbtn{font-family:var(--font)!important;font-weight:700}"+
+  ".nextbtn{display:block;margin:18px 0 6px;padding:16px;border-radius:16px;text-align:center;text-decoration:none;font-size:1.1rem;color:#0f1b45!important;background:linear-gradient(180deg,#ffd35c,#f5a31d);box-shadow:0 6px 0 #a56b0c}"+
+  ".nextbtn:active{transform:translateY(3px);box-shadow:0 3px 0 #a56b0c}"+
+  ":root{--bg:#0f1b45;--panel:#19285f;--ink:#f4f1ea;--mute:#b6bddb;--amber:#f5b335;--orange:#ee8a2b;--red:#d8452f}"+
   "body{background:radial-gradient(130% 60% at 50% 112%,rgba(238,138,43,.30),transparent 62%),radial-gradient(90% 45% at 0% 0%,rgba(52,71,154,.5),transparent 70%),#0f1b45;background-attachment:fixed;color:#f4f1ea}"+
-  "h1,h2{font-family:Georgia,'Times New Roman',serif;letter-spacing:.01em}"+
+  "h1,h2{letter-spacing:.01em}"+
   ".kbar{position:sticky;top:0;z-index:6;display:flex;align-items:center;gap:10px;padding:8px 14px;background:rgba(10,18,54,.94);border-bottom:2px solid #f5b335}"+
-  ".kbar a{display:flex;align-items:center;gap:10px;color:#f5b335;text-decoration:none;font:800 .95rem Georgia,serif;letter-spacing:.14em}"+
+  ".kbar a{display:flex;align-items:center;gap:10px;color:#f5b335;text-decoration:none;font:800 .95rem var(--font);letter-spacing:.14em}"+
   ".kbar span{color:#b6bddb;font:500 .78rem system-ui;letter-spacing:.02em}";
   document.head.appendChild(st);
   if(!home){
