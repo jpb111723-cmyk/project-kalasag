@@ -9,7 +9,7 @@
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.5 system-ui,"Segoe UI",sans-serif}
 main{max-width:900px;margin:0 auto;padding:14px 14px 48px}
-h1,h2{font-family:Georgia,serif;line-height:1.2}h1{font-size:1.8rem;margin:.2em 0}h2{font-size:1.2rem;margin:1.3em 0 .4em}
+h1,h2{font-family:var(--font);line-height:1.2}h1{font-size:1.8rem;margin:.2em 0}h2{font-size:1.2rem;margin:1.3em 0 .4em}
 a{color:var(--amber)}.mute{color:var(--mute);font-size:.9rem}
 .card{background:var(--panel);border-radius:14px;padding:12px 14px;margin:10px 0;border:1px solid var(--line)}
 input[type=text],input[type=number]{width:100%;font:inherit;color:var(--ink);background:#0a1236;border:2px solid var(--line);border-radius:8px;padding:9px 10px;margin:4px 0 10px}
@@ -45,7 +45,15 @@ button.sm{float:right;margin:0;padding:6px 12px;background:var(--panel);color:va
 @keyframes pop{40%{transform:scale(1.08)}}
 @keyframes shk{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 .pl{display:none}
+.it{position:relative}
+.pts{position:absolute;top:3px;right:6px;font:700 .68rem var(--font);color:var(--amber)}
+.sp{flex:1;min-width:0}
+.meter{height:12px;background:#0a1236;border-radius:99px;overflow:hidden;border:1px solid var(--line)}
+.meter i{display:block;height:100%;width:0;background:var(--amber);transition:width .3s}
+.meter i.full{background:#d8452f}
+.mlbl{margin:3px 0 6px;font:700 .8rem var(--font);color:var(--amber)}
 @media (min-width:760px){
+ .sp{width:100%}
  .dnd{grid-template-columns:1fr 250px;align-items:start}
  .bagp{order:2;flex-direction:column;top:56px}.bagwrap{width:190px}
  .strip{flex-wrap:wrap;overflow:visible;justify-content:center}
@@ -82,7 +90,7 @@ button.sm{float:right;margin:0;padding:6px 12px;background:var(--panel);color:va
    </svg>
    <div class="bsh" id="bsh"></div><span class="cnt" id="cnt"></span>
   </div>
-  <div class="strip" id="strip" aria-live="polite"></div>
+  <div class="sp"><div class="meter"><i id="mfill"></i></div><div class="mlbl" id="mlbl"></div><div class="strip" id="strip" aria-live="polite"></div></div>
   <span id="bagl" hidden data-k="bagl"></span>
  </div>
  <div>
@@ -105,28 +113,30 @@ button.sm{float:right;margin:0;padding:6px 12px;background:var(--panel);color:va
  <div class="bar"><i id="fill"></i></div>
  <p id="sum"></p>
  <ul id="need"></ul>
+ <p class="mute" id="junk"></p>
 </div>
 <button id="save" class="noprint" data-k="save"></button><span id="saved" class="mute noprint" role="status"></span>
 <button id="print" class="alt noprint" data-k="print"></button>
 <button id="reset" class="alt noprint" data-k="reset"></button>
+<a class="nextbtn noprint" href="sim.html" data-k="next"></a>
 <div class="pl" id="plist"></div>
 <p class="mute noprint" data-k="note"></p>
 </main>
 <script src="profile.js"></script>
 <script>
-const T={en:{back:"Back to menu",h1:"Pack your go bag",intro:"Drag each item into the KALASAG go bag, or just tap it. Only pack what you could really grab and carry. Your bag feeds your simulations, where an empty bag has consequences.",
-size:"How many people will you pack for?",vuln:"Anyone in your home who needs extra items:",tray:"Your shelf",hint:"Drag an item into the bag, or tap it. Tap a packed item to take it out.",bagl:"Your go bag",
+const T={en:{back:"Back to menu",h1:"Pack your go bag",intro:"Drag items into the KALASAG go bag, or just tap them. Space is limited and every item costs points, so choose what you would really grab and carry. Your bag feeds your simulations.",
+size:"How many people will you pack for?",vuln:"Anyone in your home who needs extra items:",tray:"Your shelf",hint:"Any item can go in, but the bag only holds so much. The number on each item is its points. Tap a packed item to take it out.",bagl:"Your go bag",
 go:"Where you will go",evac:"Evacuation center",meet:"Family meeting place",contact:"Emergency contact",ph1:"Ask your barangay hall",ph2:"If you get separated",ph3:"Name and number",
 stand:"Where you stand",save:"Save",print:"Print my checklist",reset:"Clear my answers",saved:"Saved on this device.",lg:"Filipino",
 empty:"Your bag is empty. Drag something in.",packed:"Packed",of:"of",miss:"Still missing:",done:"Your bag is complete. Check and restock it every three months.",
-ready:"Go bag ready.",cf:"Clear your go-bag answers?",plt:"Go-bag checklist",
+ready:"Go bag ready.",space:"Space",over:"overfull",noroom:"No room. That costs {n} points and the bag has {m} left. Take something out first.",junk:"Taking space without helping:",pts:"points",next:"Next: Phase 4, Simulations ▶",cf:"Clear your go-bag answers?",plt:"Go-bag checklist",
 note:"Based on go-bag lists reported from OCD, NDRRMC and DSWD guidance (72 hours of supplies, checked every three months). Household extras and the decoy items are suggestions for learning. Have a nurse or your barangay DRRM office review before wide release."},
-tl:{back:"Bumalik sa menu",h1:"Ihanda ang inyong go bag",intro:"I-drag ang bawat gamit sa go bag ng KALASAG, o i-tap lang ito. Ihanda lang ang tunay ninyong madadampot at madadala. Ginagamit ng inyong mga simulation ang bag ninyo, kung saan may bunga ang walang laman na bag.",
-size:"Ilan ang ihahanda ninyo?",vuln:"Sinumang nangangailangan ng dagdag na gamit sa inyong tahanan:",tray:"Ang inyong istante",hint:"I-drag ang gamit sa bag, o i-tap ito. I-tap ang nasa bag para ilabas ito.",bagl:"Ang inyong go bag",
+tl:{back:"Bumalik sa menu",h1:"Ihanda ang inyong go bag",intro:"I-drag ang mga gamit sa go bag ng KALASAG, o i-tap lang ang mga ito. Limitado ang espasyo at may puntos ang bawat gamit, kaya piliin ang tunay ninyong madadampot at madadala. Ginagamit ng inyong mga simulation ang bag ninyo.",
+size:"Ilan ang ihahanda ninyo?",vuln:"Sinumang nangangailangan ng dagdag na gamit sa inyong tahanan:",tray:"Ang inyong istante",hint:"Maaaring ipasok ang kahit anong gamit, pero may hangganan ang bag. Ang numero sa bawat gamit ay ang puntos nito. I-tap ang nasa bag para ilabas ito.",bagl:"Ang inyong go bag",
 go:"Saan kayo pupunta",evac:"Evacuation center",meet:"Lugar ng pagkikita ng pamilya",contact:"Emergency contact",ph1:"Itanong sa barangay hall",ph2:"Kung magkahiwalay kayo",ph3:"Pangalan at numero",
 stand:"Kinalalagyan ninyo",save:"I-save",print:"I-print ang aking checklist",reset:"Burahin ang aking mga sagot",saved:"Na-save sa device na ito.",lg:"English",
 empty:"Walang laman ang bag. Mag-drag ng gamit dito.",packed:"Nakahanda",of:"sa",miss:"Kulang pa:",done:"Kumpleto na ang inyong bag. Suriin at punuin ito tuwing tatlong buwan.",
-ready:"Handa na ang go bag.",cf:"Burahin ang mga sagot sa go bag?",plt:"Checklist ng go bag",
+ready:"Handa na ang go bag.",space:"Espasyo",over:"sobra",noroom:"Walang espasyo. {n} puntos ito at {m} na lang ang natitira sa bag. Maglabas muna ng gamit.",junk:"Kumukuha ng espasyo nang walang silbi:",pts:"puntos",next:"Susunod: Phase 4, Mga simulation ▶",cf:"Burahin ang mga sagot sa go bag?",plt:"Checklist ng go bag",
 note:"Batay sa mga listahan ng go bag mula sa gabay ng OCD, NDRRMC at DSWD (suplay para sa 72 oras, sinusuri tuwing tatlong buwan). Mga mungkahi para sa pagkatuto ang mga dagdag para sa sambahayan at ang mga pamburang gamit. Ipasuri sa nars o sa DRRM office ng barangay bago ilabas sa publiko."}};
 /* id, core, name EN, name TL, description EN, description TL */
 const ITEMS=[
@@ -148,10 +158,19 @@ elder:["Elderly","Matanda","Maintenance meds","Maintenance na gamot","Maintenanc
 preg:["Pregnant","Buntis","Prenatal records","Prenatal records","Prenatal records and vitamins","Prenatal records at bitamina"],
 pwd:["Person with a disability","May kapansanan","Spare batteries","Dagdag na baterya","Spare batteries or parts for assistive devices","Dagdag na baterya o piyesa para sa assistive device"],
 pet:["Pet","Alagang hayop","Pet food","Pagkain ng alaga","Pet food and a leash or carrier","Pagkain ng alaga at tali o carrier"]};
-const DEC={tv:["TV","TV","Admirable ambition. The go bag has no outlet.","Kapuri-puri ang ambisyon. Walang saksakan ang go bag."],
-rice:["Rice cooker","Rice cooker","Replaceable. The go bag has no kitchen.","Napapalitan ito. Walang kusina ang go bag."],
-laptop:["Laptop","Laptop","Replaceable. Back up the files, pack the water.","Napapalitan ito. I-back up ang files, ihanda ang tubig."]};
-const ORDER=["docs","water","tv","food","meds","aid","rice","light","power","whistle","cash","hyg","laptop","mask","clothes","boots"];
+const PTS={docs:1,water:4,food:4,meds:1,aid:2,hyg:1,mask:1,light:1,power:1,whistle:1,cash:1,clothes:3,boots:3,x_infant:3,x_elder:2,x_preg:1,x_pwd:2,x_pet:3};
+/* decoys: name EN, name TL, message EN, message TL, points */
+const DEC={tv:["TV","TV","Admirable ambition. The go bag has no outlet.","Kapuri-puri ang ambisyon. Walang saksakan ang go bag.",8],
+rice:["Rice cooker","Rice cooker","Replaceable. The go bag has no kitchen.","Napapalitan ito. Walang kusina ang go bag.",5],
+laptop:["Laptop","Laptop","Replaceable. Back up the files, pack the water.","Napapalitan ito. I-back up ang files, ihanda ang tubig.",4],
+sack:["Rice sack","Sako ng bigas","Raw rice needs a stove, water and time. You have a bag.","Kailangan ng hilaw na bigas ng kalan, tubig at oras. Bag lang ang mayroon kayo.",9],
+stove:["Pot and stove","Kaldero at kalan","Cooking is a plan for after the emergency.","Plano pagkatapos ng emerhensiya ang pagluluto.",5],
+umbrella:["Big umbrella","Malaking payong","Helpful in light rain. Typhoon winds disagree.","Nakatutulong sa mahinang ulan. Hindi sumasang-ayon ang hangin ng bagyo.",3],
+pillow:["Big pillow","Malaking unan","Comfort is lovely. It is also three bottles of water.","Maganda ang ginhawa. Katumbas din ito ng tatlong bote ng tubig.",3],
+shoes:["Spare shoes","Dagdag na sapatos","One pair on your feet is the plan. Three pairs is a shop.","Isang pares sa paa ang plano. Tindahan na ang tatlong pares.",5],
+dryer:["Hair dryer","Hair dryer","Powerful, until the power goes out.","Malakas, hanggang mawalan ng kuryente.",2],
+console:["Game console","Game console","The game you are playing is the one with the go bag.","Ang larong nilalaro ninyo ay ang may go bag.",4]};
+const ORDER=["docs","water","tv","food","sack","meds","aid","rice","umbrella","light","power","stove","whistle","cash","pillow","hyg","laptop","mask","shoes","clothes","dryer","boots","console"];
 const IC={
 docs:'<rect x="9" y="12" width="30" height="26" rx="4" fill="#3b82c4"/><rect x="14" y="8" width="20" height="8" rx="2" fill="#9ec8ee"/><path d="M17 24h14M17 30h10" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>',
 water:'<rect x="18" y="5" width="12" height="7" rx="2" fill="#9ec8ee"/><path d="M16 14h16l2 6v20a4 4 0 0 1-4 4H18a4 4 0 0 1-4-4V20z" fill="#4aa8e0"/><rect x="14" y="25" width="20" height="8" fill="#fff" opacity=".7"/>',
@@ -173,6 +192,13 @@ x_pwd:'<rect x="7" y="15" width="31" height="20" rx="3" fill="#2aa6a0"/><rect x=
 x_pet:'<ellipse cx="24" cy="33" rx="17" ry="5" fill="#e5b27a"/><path d="M8 33l4 9h24l4-9z" fill="#c98a4a"/><circle cx="18" cy="28" r="3.2" fill="#8a5a2b"/><circle cx="26" cy="25.5" r="3.2" fill="#8a5a2b"/><circle cx="32" cy="29" r="3.2" fill="#8a5a2b"/>',
 tv:'<rect x="5" y="9" width="38" height="25" rx="3" fill="#2b2f42"/><rect x="9" y="13" width="30" height="17" fill="#7aa7e8"/><rect x="15" y="38" width="18" height="3" fill="#2b2f42"/>',
 rice:'<path d="M11 19a13 11 0 0 1 26 0z" fill="#e8e8e8"/><rect x="9" y="19" width="30" height="21" rx="4" fill="#f4f1ea"/><circle cx="24" cy="29" r="3.2" fill="#d8452f"/>',
+sack:'<path d="M14 14c-4 6-6 14-5 22a6 6 0 0 0 6 6h18a6 6 0 0 0 6-6c1-8-1-16-5-22z" fill="#d8b878"/><path d="M14 14l4-6h12l4 6" fill="#b8975a"/><path d="M18 8h12" stroke="#8a6a35" stroke-width="3"/><circle cx="20" cy="29" r="1.7" fill="#8a6a35"/><circle cx="28" cy="33" r="1.7" fill="#8a6a35"/><circle cx="24" cy="24" r="1.7" fill="#8a6a35"/>',
+stove:'<rect x="8" y="26" width="32" height="14" rx="3" fill="#5b6177"/><path d="M12 26v-6h24v6" fill="#9aa1b8"/><rect x="14" y="13" width="20" height="8" rx="2" fill="#c98a4a"/><path d="M12 34h4M22 34h4M32 34h4" stroke="#f5b335" stroke-width="3" stroke-linecap="round"/>',
+umbrella:'<path d="M5 24a19 17 0 0 1 38 0z" fill="#d8452f"/><path d="M24 24v14a3 3 0 0 1-6 0" fill="none" stroke="#f4f1ea" stroke-width="3" stroke-linecap="round"/><path d="M24 6v4" stroke="#f4f1ea" stroke-width="3"/>',
+pillow:'<rect x="7" y="13" width="34" height="22" rx="9" fill="#cfd8f5"/><path d="M12 24h24" stroke="#9aa9e0" stroke-width="2" stroke-dasharray="3 3"/>',
+shoes:'<path d="M5 30c6 0 8-4 10-10l6 4c2 1 4 2 7 3 6 1 10 2 10 6v3H5z" fill="#6b84d8"/><rect x="5" y="36" width="37" height="4" rx="2" fill="#f4f1ea"/>',
+dryer:'<path d="M8 12h24a6 6 0 0 1 0 14H8z" fill="#d86b9a"/><rect x="18" y="24" width="9" height="18" rx="3" fill="#a23c6d"/><rect x="32" y="15" width="8" height="8" fill="#f4f1ea"/>',
+console:'<rect x="6" y="18" width="36" height="16" rx="8" fill="#3d4466"/><path d="M14 22v8M10 26h8" stroke="#f4f1ea" stroke-width="2.5" stroke-linecap="round"/><circle cx="32" cy="24" r="2.4" fill="#d8452f"/><circle cx="37" cy="28" r="2.4" fill="#4cae7f"/>',
 laptop:'<rect x="9" y="11" width="30" height="20" rx="2" fill="#2b2f42"/><rect x="12" y="14" width="24" height="14" fill="#9ec8ee"/><path d="M4 34h40l-3 5H7z" fill="#8a90a8"/>'};
 const svg=id=>`<svg viewBox="0 0 48 48" aria-hidden="true">${IC[id]}</svg>`;
 const $=s=>document.querySelector(s);
@@ -182,15 +208,20 @@ const li=()=>L==="en"?0:1,tt=k=>T[L][k];
 $("#size").value=(st.household||{}).size||1;
 const plan=st.plan||{};["evac","meet","contact"].forEach(k=>$("#"+k).value=plan[k]||"");
 
+const size=()=>Math.max(1,Math.min(12,+$("#size").value||1));
+const cap=()=>20+6*(size()-1);
 function realItems(){
- const a=ITEMS.map(x=>({id:x[0],core:x[1],n:x[2+li()],d:x[4+li()]}));
- vuln.forEach(v=>a.push({id:"x_"+v,core:0,x:1,n:VUL[v][2+li()],d:VUL[v][4+li()]}));
+ const a=ITEMS.map(x=>({id:x[0],core:x[1],n:x[2+li()],d:x[4+li()],p:PTS[x[0]]+((x[0]==="water"||x[0]==="food")?2*(size()-1):0)}));
+ vuln.forEach(v=>a.push({id:"x_"+v,core:0,x:1,n:VUL[v][2+li()],d:VUL[v][4+li()],p:PTS["x_"+v]}));
  return a;
 }
+const decoys=()=>Object.keys(DEC).map(id=>({id,dec:1,n:DEC[id][li()],d:DEC[id][li()],p:DEC[id][4]}));
+const everything=()=>realItems().concat(decoys());
+const used=()=>everything().filter(x=>packed.has(x.id)).reduce((a,x)=>a+x.p,0);
 function shelfList(){
- const real=realItems(),by={};real.forEach(x=>by[x.id]=x);
- const out=[];ORDER.forEach(id=>{if(DEC[id])out.push({id,dec:1,n:DEC[id][li()]});else if(by[id])out.push(by[id])});
- real.filter(x=>x.x).forEach(x=>out.push(x));
+ const by={};everything().forEach(x=>by[x.id]=x);
+ const out=[];ORDER.forEach(id=>{if(by[id])out.push(by[id])});
+ realItems().filter(x=>x.x).forEach(x=>out.push(x));
  return out;
 }
 function draw(){
@@ -203,28 +234,34 @@ function draw(){
  refresh();
 }
 function refresh(){
- const real=realItems(),done=real.filter(x=>packed.has(x.id));
- $("#shelf").innerHTML=shelfList().filter(x=>x.dec||!packed.has(x.id)).map(x=>`<button class="it" data-id="${x.id}" ${x.dec?'data-dec="1"':""} aria-label="${(x.d||x.n).replace(/"/g,"&quot;")}">${svg(x.id)}${x.n}</button>`).join("");
- $("#strip").innerHTML=done.length?done.map(x=>`<button data-out="${x.id}" aria-label="${x.n}" title="${x.n}">${svg(x.id)}</button>`).join(""):tt("empty");
+ const real=realItems(),all=everything(),done=real.filter(x=>packed.has(x.id)),u=used(),c=cap();
+ $("#shelf").innerHTML=shelfList().filter(x=>!packed.has(x.id)).map(x=>`<button class="it" data-id="${x.id}" aria-label="${(x.d||x.n).replace(/"/g,"&quot;")} (${x.p})">${svg(x.id)}<b class="pts">${x.p}</b>${x.n}</button>`).join("");
+ const inBag=all.filter(x=>packed.has(x.id));
+ $("#strip").innerHTML=inBag.length?inBag.map(x=>`<button data-out="${x.id}" aria-label="${x.n}" title="${x.n} (${x.p})">${svg(x.id)}</button>`).join(""):tt("empty");
  $("#strip").querySelectorAll("[data-out]").forEach(b=>b.onclick=()=>{packed.delete(b.dataset.out);refresh();save()});
- $("#cnt").textContent=done.length+"/"+real.length;
+ $("#cnt").textContent=u+"/"+c;
+ $("#mfill").style.width=Math.min(100,Math.round(u/c*100))+"%";$("#mfill").className=u>=c?"full":"";
+ $("#mlbl").textContent=`${tt("space")}: ${u}/${c}`+(u>c?" · "+tt("over"):"");
  const miss=real.filter(x=>(x.core||x.x)&&!packed.has(x.id));
  $("#fill").style.width=Math.round(done.length/real.length*100)+"%";
  $("#sum").textContent=miss.length?`${tt("packed")} ${done.length} ${tt("of")} ${real.length}. ${tt("miss")}`:tt("done");
  $("#need").innerHTML=miss.map(x=>`<li>${x.d}</li>`).join("");
+ const junk=all.filter(x=>x.dec&&packed.has(x.id));
+ $("#junk").textContent=junk.length?`${tt("junk")} ${junk.map(x=>x.n).join(", ")} (${junk.reduce((a,x)=>a+x.p,0)} ${tt("pts")}).`:"";
  $("#bagp").classList.toggle("ready",!real.some(x=>x.core&&!packed.has(x.id)));
  $("#plist").innerHTML=`<h2>${tt("plt")}</h2>`+real.map(x=>`<p>${packed.has(x.id)?"☑":"☐"} ${x.d}</p>`).join("");
 }
 function say(m){$("#fb").textContent=m}
+function shakeBag(){const b=$("#bagw");b.classList.remove("shake");void b.offsetWidth;b.classList.add("shake")}
 function pack(id){
- const x=realItems().find(y=>y.id===id);if(!x||packed.has(id))return;
- packed.add(id);refresh();save();say(`${tt("packed")}: ${x.n}`);
+ const x=everything().find(y=>y.id===id);if(!x||packed.has(id))return;
+ const left=cap()-used();
+ if(x.p>left){say(tt("noroom").replace("{n}",x.p).replace("{m}",Math.max(0,left)));shakeBag();return}
+ packed.add(id);refresh();save();
+ say(x.dec?DEC[id][2+li()]:`${tt("packed")}: ${x.n}`);
  const b=$("#bagw");b.classList.remove("pop");void b.offsetWidth;b.classList.add("pop");
 }
-function attempt(id){
- if(DEC[id]){say(DEC[id][2+li()]);const b=$("#bagw");b.classList.remove("shake");void b.offsetWidth;b.classList.add("shake");return}
- pack(id);
-}
+const attempt=pack;
 const hit=e=>{const r=$("#bagp").getBoundingClientRect();return e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom};
 function ghost(it){const g=document.createElement("div");g.className="ghost";g.innerHTML=it.querySelector("svg").outerHTML;document.body.appendChild(g);return g}
 $("#shelf").addEventListener("pointerdown",e=>{
@@ -250,11 +287,12 @@ function save(){
  const f={};ITEMS.forEach(x=>f[x[0]]=packed.has(x[0]));
  const core=ITEMS.filter(x=>x[1]),n=core.filter(x=>f[x[0]]).length;
  const p={evac:$("#evac").value.trim(),meet:$("#meet").value.trim(),contact:$("#contact").value.trim()};
- const ids=new Set(realItems().map(x=>x.id)),keep=[...packed].filter(i=>ids.has(i));
- KP.set("p3",{household:{size:+$("#size").value||1,vuln:[...vuln]},packed:keep,flags:f,
-  level:n===0?"none":n===core.length?"ready":"partial",plan:p,hasPlan:!!(p.evac&&p.meet),goBagDate:Date.now()});
+ const ids=new Set(everything().map(x=>x.id)),keep=[...packed].filter(i=>ids.has(i));
+ KP.set("p3",{household:{size:size(),vuln:[...vuln]},packed:keep,flags:f,
+  level:n===0?"none":n===core.length?"ready":"partial",plan:p,hasPlan:!!(p.evac&&p.meet),goBagDate:Date.now(),used:used(),cap:cap(),junk:keep.filter(i=>DEC[i])});
 }
-["size","evac","meet","contact"].forEach(k=>$("#"+k).oninput=save);
+["evac","meet","contact"].forEach(k=>$("#"+k).oninput=save);
+$("#size").oninput=()=>{refresh();save()};
 $("#save").onclick=()=>{save();say("");$("#saved").textContent=tt("saved")};
 $("#print").onclick=()=>window.print();
 $("#reset").onclick=()=>{if(confirm(tt("cf"))){packed.clear();vuln.clear();["evac","meet","contact"].forEach(k=>$("#"+k).value="");$("#size").value=1;draw();save()}};
