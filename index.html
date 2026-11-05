@@ -2,64 +2,166 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Project KALASAG</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 36'%3E%3Cpath d='M16 1L2 6v12c0 9 6 15 14 17z' fill='%232f45a8'/%3E%3Cpath d='M16 1l14 5v12c0 9-6 15-14 17z' fill='%23d8532b'/%3E%3Crect x='14' y='9' width='4' height='14' fill='white'/%3E%3Crect x='9' y='14' width='14' height='4' fill='white'/%3E%3C/svg%3E">
 <style>
-:root{--bg:#12303f;--panel:#1b4152;--ink:#e9f1f4;--mute:#a9c3cd;--amber:#f2b441;color-scheme:dark}
+:root{--navy:#0f1b45;--panel:#19285f;--line:#34479a;--gold:#f5b335;--orange:#ee8a2b;--red:#d8452f;--ink:#f4f1ea;--mute:#b6bddb;color-scheme:dark}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.5 system-ui,"Segoe UI",sans-serif}
-main{max-width:640px;margin:0 auto;padding:24px 16px 48px}
-h1{font:700 2.2rem/1.15 Georgia,serif;margin:.1em 0 .3em}
-a.card{display:block;background:var(--panel);border:2px solid #2d5e74;border-radius:14px;padding:14px 16px;margin:12px 0;color:var(--ink);text-decoration:none}
-a.card:hover{border-color:var(--amber)}
-:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
-a.card b{display:block;font:700 1.2rem Georgia,serif}
-.tag{display:inline-block;margin-top:6px;padding:2px 10px;border-radius:99px;background:var(--amber);color:#12303f;font-size:.85rem;font-weight:600}
-.mute{color:var(--mute);font-size:.9rem}
-button{font:inherit;font-weight:700;border:2px solid #2d5e74;border-radius:10px;padding:6px 12px;cursor:pointer;background:var(--panel);color:var(--ink);float:right}
+html,body{margin:0;min-height:100%}
+body{font:17px/1.5 system-ui,"Segoe UI",sans-serif;color:var(--ink);background:var(--navy)}
+#bg{position:fixed;inset:0;z-index:-1;background:var(--navy) url(img/kalasag-bg.webp) center/cover;filter:blur(10px) brightness(.65) saturate(1.2);transform:scale(1.12)}
+h1,h2,h3{font-family:Georgia,"Times New Roman",serif;line-height:1.2}
+:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+[hidden]{display:none!important}
+#gate{position:fixed;inset:0;z-index:20;display:grid;place-items:center;padding:14px;background:rgba(8,14,40,.94);overflow:auto}
+.gbox{width:100%;max-width:640px;background:var(--panel);border:2px solid var(--gold);border-radius:18px;padding:18px 18px 16px;box-shadow:0 14px 44px rgba(0,0,0,.55)}
+.ghead{display:flex;align-items:center;gap:12px}
+.ghead h1{margin:0;font-size:1.5rem}
+.gscroll{max-height:50vh;overflow:auto;margin:10px 0;padding-right:8px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.gscroll h3{margin:.9em 0 .1em;color:var(--gold);font-size:1.02rem}
+.gscroll p{margin:.2em 0 .6em}
+.gscroll small{color:var(--mute)}
+.agree{display:flex;gap:10px;align-items:flex-start;margin:10px 0;cursor:pointer}
+.agree input{width:24px;height:24px;flex:none;accent-color:var(--gold);margin-top:2px}
+.row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1 1 180px}
+.btn{font:inherit;font-weight:800;border:0;border-radius:14px;padding:14px 16px;cursor:pointer;color:#0f1b45;background:linear-gradient(180deg,#ffc94a,#f5a31d);box-shadow:0 5px 0 #a56b0c;text-align:center}
+.btn:disabled{opacity:.45;cursor:not-allowed;box-shadow:none}
+.btn.alt{background:var(--navy);color:var(--ink);border:2px solid var(--line);box-shadow:0 5px 0 #0a1236}
+#decl{margin:10px 0;padding:12px;border-radius:12px;background:#3a1620;border:1px solid var(--red)}
+#home{display:grid;gap:14px;max-width:1180px;margin:0 auto;padding:12px 12px 28px}
+.hero{border-radius:18px;overflow:hidden;border:2px solid rgba(245,179,53,.55);box-shadow:0 10px 34px rgba(0,0,0,.5);background:#0a1236 url(img/kalasag-bg.webp) center/cover}
+.hero img{display:block;width:100%;height:auto;max-height:calc(100vh - 24px);max-height:calc(100svh - 24px);object-fit:contain}
+.menu{display:grid;gap:12px;align-content:start}
+.slogan{margin:0;text-align:center;font:italic 1rem/1.5 Georgia,serif;color:var(--ink);padding:10px 12px;border-radius:14px;background:rgba(10,18,54,.72);border:1px solid var(--line)}
+.slogan b{font:800 1.45rem Georgia,serif;font-style:normal;color:var(--gold)}
+.go{display:flex;align-items:center;justify-content:center;gap:12px;font:800 1.4rem system-ui;letter-spacing:.04em;padding:18px;border:0;border-radius:18px;cursor:pointer;color:#0f1b45;background:linear-gradient(180deg,#ffd35c,#f5a31d);box-shadow:0 7px 0 #a56b0c,0 12px 24px rgba(0,0,0,.4);animation:pulse 2.4s ease-in-out infinite}
+.go:active{transform:translateY(4px);box-shadow:0 3px 0 #a56b0c}
+.go svg{width:26px;height:26px;fill:#0f1b45}
+@keyframes pulse{50%{filter:brightness(1.12)}}
+.stages{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.stage{position:relative;display:flex;flex-direction:column;gap:2px;min-height:136px;padding:14px 12px 12px;border-radius:18px;color:var(--ink);text-decoration:none;background:linear-gradient(160deg,#2a42a6,#19285f);border:2px solid var(--line);box-shadow:0 6px 0 #0a1236}
+.stage.hot{background:linear-gradient(160deg,#e0662b,#a8321f);border-color:#ff9a5c}
+.stage:active{transform:translateY(4px);box-shadow:0 2px 0 #0a1236}
+.stage.done{border-color:var(--gold)}
+.stage.done::after{content:"★";position:absolute;top:8px;right:12px;color:var(--gold);font-size:1.3rem}
+.num{position:absolute;top:8px;left:10px;font:800 .8rem system-ui;color:var(--mute);letter-spacing:.1em}
+.ico{width:34px;height:34px;margin:12px 0 4px;fill:none;stroke:var(--gold);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.stage.hot .ico{stroke:#fff}
+.stage b{font:700 1.08rem Georgia,serif}
+.stage small{color:#d6dbf2;line-height:1.3}
+.tag{margin-top:auto;padding-top:6px;font:700 .72rem system-ui;letter-spacing:.06em;text-transform:uppercase;color:var(--gold)}
+.stage.hot .tag{color:#fff}
+.dock{display:flex;gap:8px}
+.dock button{flex:1;font:600 .9rem system-ui;color:var(--ink);background:rgba(10,18,54,.8);border:2px solid var(--line);border-radius:12px;padding:10px 8px;cursor:pointer}
+.priv{margin:0;text-align:center;color:var(--mute);font-size:.82rem}
+@media (orientation:landscape) and (min-width:760px){
+ #home{grid-template-columns:minmax(0,1.55fr) minmax(300px,1fr);align-items:start;min-height:100vh;min-height:100svh}
+ .hero{position:sticky;top:12px}
+}
+@media (max-width:380px){.stages{gap:8px}.stage{min-height:128px}}
+@media (prefers-reduced-motion:reduce){.go{animation:none}}
 </style>
 </head>
 <body>
-<main>
-<button id="lg"></button>
-<h1>Project KALASAG</h1>
-<p data-k="intro"></p>
-<a class="card" href="phase1.html"><b data-k="a1"></b><span data-k="d1"></span><br><span class="tag" id="s1"></span></a>
-<a class="card" href="phase2.html"><b data-k="a2"></b><span data-k="d2"></span><br><span class="tag" id="s2"></span></a>
-<a class="card" href="gobag.html"><b data-k="a3"></b><span data-k="d3"></span><br><span class="tag" id="s3"></span></a>
-<a class="card" href="sim.html"><b data-k="a4"></b><span data-k="d4"></span><br><span class="tag" id="s4"></span></a>
-<p class="mute" data-k="soon"></p>
-<p class="mute" data-k="priv"></p>
+<div id="bg"></div>
+
+<div id="gate" role="dialog" aria-modal="true" aria-labelledby="gt" hidden>
+ <div class="gbox">
+  <div class="ghead"><span id="gs"></span><h1 id="gt" data-k="gt"></h1></div>
+  <p data-k="gi" style="margin:.5em 0 0"></p>
+  <div class="gscroll">
+   <h3 data-k="h1"></h3><p data-k="p1"></p><p><small data-k="p1s"></small></p>
+   <h3 data-k="h2"></h3><p data-k="p2"></p>
+   <h3 data-k="h3"></h3><p data-k="p3"></p>
+   <h3 data-k="h4"></h3><p data-k="p4"></p>
+  </div>
+  <div id="decl" hidden role="alert"><span data-k="dm"></span></div>
+  <label class="agree" id="agl"><input type="checkbox" id="ck"><span data-k="ck"></span></label>
+  <div class="row" id="gbtn">
+   <button class="btn" id="ok" disabled data-k="ok"></button>
+   <button class="btn alt" id="no" data-k="no"></button>
+  </div>
+  <div class="row" id="gclose" hidden><button class="btn" id="cl" data-k="cl"></button></div>
+  <p style="text-align:right;margin:10px 0 0"><button class="btn alt" id="glg" style="padding:6px 12px;font-size:.85rem;box-shadow:none"></button></p>
+ </div>
+</div>
+
+<main id="home" hidden>
+ <section class="hero"><img src="img/kalasag-art.webp" width="942" height="730" alt="Project KALASAG: Bridging Awareness and Action. A family facing a flooded street on one side, and nurses and neighbors preparing a go bag together on the other, joined under a shield."></section>
+ <section class="menu">
+  <p class="slogan"><b>K</b>nowledge to <b>A</b>ction <b>L</b>inkage for <b>A</b>daptive <b>S</b>afety and <b>A</b>ctionable <b>G</b>rowth</p>
+  <button class="go" id="go"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4l13 8-13 8z"/></svg><span id="gol"></span></button>
+  <div class="stages">
+   <a class="stage" id="st1" href="phase1.html"><span class="num">1</span><svg class="ico" viewBox="0 0 24 24"><path d="M12 22s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg><b data-k="a1"></b><small data-k="d1"></small><span class="tag" id="s1"></span></a>
+   <a class="stage" id="st2" href="phase2.html"><span class="num">2</span><svg class="ico" viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="17" rx="2"/><path d="M9 3h6v4H9zM9 14l2 2 4-4"/></svg><b data-k="a2"></b><small data-k="d2"></small><span class="tag" id="s2"></span></a>
+   <a class="stage" id="st3" href="gobag.html"><span class="num">3</span><svg class="ico" viewBox="0 0 24 24"><path d="M8 7a4 4 0 0 1 8 0"/><rect x="5" y="7" width="14" height="15" rx="4"/><path d="M9 14h6M9 18h6"/></svg><b data-k="a3"></b><small data-k="d3"></small><span class="tag" id="s3"></span></a>
+   <a class="stage hot" id="st4" href="sim.html"><span class="num">4</span><svg class="ico" viewBox="0 0 24 24"><path d="M12 2l8 3v6c0 5-3.4 8.7-8 11-4.6-2.3-8-6-8-11V5z"/><path d="M10 8.5l5 3.5-5 3.5z"/></svg><b data-k="a4"></b><small data-k="d4"></small><span class="tag" id="s4"></span></a>
+  </div>
+  <div class="dock">
+   <button id="lg"></button><button id="nt" data-k="nt"></button><button id="rs" data-k="rs"></button>
+  </div>
+  <p class="priv" data-k="pv"></p>
+ </section>
 </main>
+
 <script src="profile.js"></script>
 <script>
-const T={en:{intro:"Get ready before the water, the shaking or the wind arrives. Work through the four phases in order, or jump to any of them.",
-a1:"Phase 1: Know your risk",d1:"Pick the hazards near your home and test your warning knowledge.",
-a2:"Phase 2: Reality check",d2:"Guess how long you could last on your own, then count.",
-a3:"Phase 3: Build your go bag",d3:"Tick what you have really packed and see what is missing.",
-a4:"Phase 4: Simulations",d4:"Flood, earthquake, typhoon, tsunami, storm surge, volcano and landslide. Fail safely, rewind, try again.",
-soon:"",priv:"Your answers stay on this device. Nothing is sent anywhere.",
-lg:"Filipino",todo:"Not started",done:"Done",none:"Bag empty",partial:"Bag partly packed",ready:"Bag ready",go:"Game overs found: "},
-tl:{intro:"Maghanda bago dumating ang baha, lindol o hangin. Sundin ang apat na phase nang paisa-isa, o pumili ng alinman.",
-a1:"Phase 1: Alamin ang inyong panganib",d1:"Piliin ang mga panganib malapit sa inyong tahanan at subukin ang inyong kaalaman sa mga babala.",
-a2:"Phase 2: Pagsusuri ng realidad",d2:"Hulaan kung gaano katagal kayong tatagal nang mag-isa, saka bilangin.",
-a3:"Phase 3: Buuin ang inyong go bag",d3:"Lagyan ng tsek ang tunay na nakahanda at tingnan ang kulang.",
-a4:"Phase 4: Mga Simulation",d4:"Baha, lindol, bagyo, tsunami, storm surge, bulkan at landslide. Magkamali nang ligtas, bumalik, at subukan muli.",
-soon:"",priv:"Nananatili sa device na ito ang inyong mga sagot. Walang ipinapadala kahit saan.",
-lg:"English",todo:"Hindi pa nasisimulan",done:"Tapos na",none:"Walang laman ang bag",partial:"Kalahati ang laman ng bag",ready:"Handa na ang bag",go:"Mga game over na natuklasan: "}};
-let L=KP.lang();
+const T={en:{
+gt:"Before you begin",gi:"Please read this notice and agree before continuing.",
+h1:"Your privacy",p1:"This website runs entirely on your own device. Nothing you tick, type or choose is ever sent back to us or to any server, because the connection is one-way: the site is delivered to you and nothing returns. Your progress is saved only in this browser, on this device. We cannot see, recover or share it. You can erase it at any time with “Clear my progress” or by clearing your browser data.",
+p1s:"Like any website, the hosting service may log that a page was opened. That is separate from your answers, which never leave your device.",
+h2:"A learning tool, not emergency advice",p2:"Project KALASAG is a learning tool built from a nursing research study. The simulations are simplified and are not professional, medical or emergency advice. In a real emergency, follow the instructions of PAGASA, PHIVOLCS, OCD/NDRRMC, the DOH and your local disaster risk reduction office.",
+h3:"No liability",p3:"To the fullest extent permitted by law, the research team, the authors and the school are not responsible or liable for any damage, injury, loss or emotional discomfort arising from using this website or acting on its content.",
+h4:"Sensitive content and your choice",p4:"Scenarios describe floods, earthquakes and other disasters, and the consequences of poor choices. Some content may be upsetting. Taking part is voluntary: you can stop at any time, and if you feel distressed, talk to someone you trust or a health professional.",
+ck:"I have read and understood this notice and I agree to continue.",ok:"Agree and continue",no:"I do not agree",cl:"Close",
+dm:"You need to agree to use Project KALASAG. You may close this page, or read the notice again.",
+a1:"Know your risk",d1:"Map your hazards and test your warning knowledge.",a2:"Reality check",d2:"Guess how long you could last, then count.",a3:"Go bag",d3:"Pack what matters and see what is missing.",a4:"Simulations",d4:"Seven scenarios. One rule: fail safely.",
+start:"Start",cont:"Continue",lg:"Filipino",nt:"Notice",rs:"Clear my progress",cf:"Clear all your progress on this device?",pv:"Your answers stay on this device. Nothing is sent anywhere.",
+todo:"New",done:"Done",none:"Bag empty",partial:"Bag partly packed",ready:"Bag ready",go:"Game overs: "},
+tl:{
+gt:"Bago kayo magsimula",gi:"Pakibasa ang paunawang ito at sumang-ayon bago magpatuloy.",
+h1:"Ang inyong privacy",p1:"Ganap na tumatakbo sa sarili ninyong device ang website na ito. Walang anumang itinsek, tina-type o pinipili ninyo ang ipinapadala pabalik sa amin o sa anumang server, dahil isang direksyon lang ang koneksyon: ipinapadala sa inyo ang site at walang bumabalik. Sa browser at device na ito lang naka-save ang inyong progress. Hindi namin ito nakikita, nababawi o naibabahagi. Maaari ninyo itong burahin anumang oras gamit ang “Burahin ang progress” o sa pag-clear ng data ng browser.",
+p1s:"Tulad ng alinmang website, maaaring itala ng hosting service na may nagbukas ng pahina. Hiwalay ito sa inyong mga sagot, na hindi kailanman umaalis sa inyong device.",
+h2:"Kagamitang pampagkatuto, hindi payong pang-emerhensiya",p2:"Ang Project KALASAG ay kagamitang pampagkatuto na hango sa isang pananaliksik sa nursing. Pinasimple ang mga simulation at hindi ito propesyonal, medikal o emergency na payo. Sa totoong emerhensiya, sundin ang tagubilin ng PAGASA, PHIVOLCS, OCD/NDRRMC, DOH at ng inyong lokal na tanggapan sa disaster risk reduction.",
+h3:"Walang pananagutan",p3:"Hanggang sa pinakamataas na pinahihintulutan ng batas, hindi mananagot ang pangkat ng pananaliksik, ang mga may-akda at ang paaralan sa anumang pinsala, pagkasugat, pagkawala o emosyonal na hindi pagkakomportable na dulot ng paggamit ng website na ito o pagsunod sa nilalaman nito.",
+h4:"Sensitibong nilalaman at ang inyong pasya",p4:"Inilalarawan ng mga senaryo ang baha, lindol at iba pang sakuna, at ang bunga ng maling pasya. Maaaring makabagabag ang ilang nilalaman. Boluntaryo ang pakikilahok: maaari kayong huminto anumang oras, at kung nababagabag kayo, kausapin ang isang pinagkakatiwalaan o propesyonal sa kalusugan.",
+ck:"Nabasa at naintindihan ko ang paunawang ito at sumasang-ayon akong magpatuloy.",ok:"Sumang-ayon at magpatuloy",no:"Hindi ako sumasang-ayon",cl:"Isara",
+dm:"Kailangan ninyong sumang-ayon para magamit ang Project KALASAG. Maaari ninyong isara ang pahinang ito, o basahin muli ang paunawa.",
+a1:"Alamin ang panganib",d1:"Mapa ng mga panganib at pagsubok sa kaalaman sa mga babala.",a2:"Pagsusuri ng realidad",d2:"Hulaan kung gaano katagal kayong tatagal, saka bilangin.",a3:"Go bag",d3:"Ihanda ang mahalaga at tingnan ang kulang.",a4:"Mga simulation",d4:"Pitong senaryo. Isang tuntunin: magkamali nang ligtas.",
+start:"Simulan",cont:"Magpatuloy",lg:"English",nt:"Paunawa",rs:"Burahin ang progress",cf:"Burahin ang lahat ng progress sa device na ito?",pv:"Nananatili sa device na ito ang inyong mga sagot. Walang ipinapadala kahit saan.",
+todo:"Bago",done:"Tapos na",none:"Walang laman ang bag",partial:"Kalahati ang laman ng bag",ready:"Handa na ang bag",go:"Mga game over: "}};
+const $=s=>document.querySelector(s);
+let L=KP.lang(),readonly=false;
+const KEYS=["kalasag_over","kalasag_over_quake","kalasag_over_tsunami","kalasag_over_typhoon","kalasag_over_surge","kalasag_over_volcano","kalasag_over_slide"];
 function draw(){
  const t=T[L],p=KP.get();document.documentElement.lang=L;
  document.querySelectorAll("[data-k]").forEach(e=>e.textContent=t[e.dataset.k]);
- lg.textContent=t.lg;
- s1.textContent=(p.p1||{}).done?t.done:t.todo;
- s2.textContent=(p.p2||{}).done?t.done:t.todo;
- s3.textContent=(p.p3||{}).level?t[p.p3.level]:t.todo;
- let n=0;try{["kalasag_over","kalasag_over_quake","kalasag_over_tsunami","kalasag_over_typhoon","kalasag_over_surge","kalasag_over_volcano","kalasag_over_slide"].forEach(k=>{n+=JSON.parse(localStorage.getItem(k)||"[]").length})}catch(e){}
- s4.textContent=t.go+n;
+ $("#lg").textContent=t.lg;$("#glg").textContent=t.lg;$("#gs").innerHTML=KP.shield(40);
+ const d1=!!(p.p1||{}).done,d2=!!(p.p2||{}).done,lv=(p.p3||{}).level;
+ $("#s1").textContent=d1?t.done:t.todo;$("#s2").textContent=d2?t.done:t.todo;$("#s3").textContent=lv?t[lv]:t.todo;
+ let n=0;try{KEYS.forEach(k=>{n+=JSON.parse(localStorage.getItem(k)||"[]").length})}catch(e){}
+ $("#s4").textContent=t.go+n;
+ $("#st1").classList.toggle("done",d1);$("#st2").classList.toggle("done",d2);$("#st3").classList.toggle("done",lv==="ready");
+ $("#gol").textContent=(d1||d2||lv)?t.cont:t.start;
+ $("#agl").hidden=$("#gbtn").hidden=readonly;$("#gclose").hidden=!readonly;
 }
-lg.onclick=()=>{L=L==="en"?"tl":"en";KP.setLang(L);draw()};
+function target(){const p=KP.get();
+ if(!(p.p1||{}).done)return"phase1.html";if(!(p.p2||{}).done)return"phase2.html";
+ if(!(p.p3||{}).level||p.p3.level==="none")return"gobag.html";return"sim.html"}
+function openGate(ro){readonly=ro;$("#decl").hidden=true;$("#ck").checked=false;$("#ok").disabled=true;$("#gate").hidden=false;if(!ro)$("#home").hidden=true;draw();(ro?$("#cl"):$("#ck")).focus()}
+function showHome(){$("#gate").hidden=true;$("#home").hidden=false;draw();window.scrollTo(0,0)}
+$("#ck").onchange=e=>{$("#ok").disabled=!e.target.checked};
+$("#ok").onclick=()=>{if(!$("#ck").checked)return;KP.agree();showHome()};
+$("#no").onclick=()=>{$("#decl").hidden=false;$("#ok").disabled=true;$("#ck").checked=false};
+$("#cl").onclick=()=>{$("#gate").hidden=true;$("#home").hidden=false};
+$("#nt").onclick=()=>openGate(true);
+$("#go").onclick=()=>{location.href=target()};
+const flip=()=>{L=L==="en"?"tl":"en";KP.setLang(L);draw()};
+$("#lg").onclick=flip;$("#glg").onclick=flip;
+$("#rs").onclick=()=>{if(!confirm(T[L].cf))return;KP.clear();try{KEYS.forEach(k=>localStorage.removeItem(k))}catch(e){}draw()};
 draw();
+if(KP.agreed())showHome();else openGate(false);
 </script>
 </body>
 </html>
