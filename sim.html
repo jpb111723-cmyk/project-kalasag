@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Simulation · Project KALASAG</title>
 <style>
-:root{--bg:#12303f;--panel:#1b4152;--ink:#e9f1f4;--mute:#a9c3cd;--water:#2f8fa3;--amber:#f2b441;--orange:#ee8a2b;--red:#d6453d;--green:#4cae7f;color-scheme:dark}
+:root{--bg:#0f1b45;--panel:#19285f;--ink:#f4f1ea;--mute:#b6bddb;--water:#2f8fa3;--amber:#f2b441;--orange:#ee8a2b;--red:#d6453d;--green:#4cae7f;color-scheme:dark}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.5 system-ui,"Segoe UI",sans-serif}
 main{max-width:640px;margin:0 auto;padding:20px 16px 48px}
@@ -13,8 +13,8 @@ h1,h2{font-family:Georgia,"Times New Roman",serif;line-height:1.2;margin:.2em 0 
 h1{font-size:2rem}h2{font-size:1.3rem}
 p{margin:.4em 0 1em}
 a{color:var(--amber)}
-.chip{display:inline-block;padding:2px 10px;border-radius:99px;font-size:.85rem;font-weight:600;color:#12303f}
-.scene{position:relative;border-radius:14px;overflow:hidden;background:#0d2230;margin:12px 0}
+.chip{display:inline-block;padding:2px 10px;border-radius:99px;font-size:.85rem;font-weight:600;color:#0f1b45}
+.scene{position:relative;border-radius:14px;overflow:hidden;background:#0a1236;margin:12px 0}
 .scene svg{display:block;width:100%;height:auto}
 .water{transition:transform 2.4s ease-in-out}
 .wave{animation:wave 3s linear infinite}
@@ -25,10 +25,10 @@ a{color:var(--amber)}
 .over{position:absolute;inset:0;display:grid;place-items:center;background:rgba(10,20,30,.55);opacity:0;animation:fade 1s 2s forwards}
 .over b{font:700 2.2rem Georgia,serif;color:var(--red);letter-spacing:.04em}
 @keyframes fade{to{opacity:1}}
-button{font:inherit;color:var(--ink);background:var(--panel);border:2px solid #2d5e74;border-radius:10px;padding:12px 14px;text-align:left;cursor:pointer;width:100%;margin:6px 0}
+button{font:inherit;color:var(--ink);background:var(--panel);border:2px solid #34479a;border-radius:10px;padding:12px 14px;text-align:left;cursor:pointer;width:100%;margin:6px 0}
 button:hover{border-color:var(--amber)}
 :focus-visible{outline:3px solid var(--amber);outline-offset:2px}
-button.go{background:var(--amber);color:#12303f;border-color:var(--amber);font-weight:700;text-align:center}
+button.go{background:var(--amber);color:#0f1b45;border-color:var(--amber);font-weight:700;text-align:center}
 .card{background:var(--panel);border-radius:12px;padding:12px 14px;margin:10px 0}
 .card small,.mute{color:var(--mute)}
 .mute{font-size:.9rem}
@@ -77,15 +77,15 @@ function scene(w,over){
  const k=(window.SCEN&&SCEN.kind)||"flood",wet=["flood","typhoon","tsunami","surge"].includes(k),rainy=["flood","typhoon"].includes(k),ash=k==="volcano";
  let rain="";if(rainy||ash)for(let i=0;i<16;i++)rain+=`<line x1="${i*21+5}" y1="0" x2="${i*21+(k==="typhoon"?-8:2)}" y2="12" style="animation-delay:${-(i*.17)%.9}s;${ash?"stroke:#b8b8b8;animation-duration:2.2s":""}"/>`;
  const y=-Math.round(w*72),sh=k==="quake"?(over?"":"animation:shake .35s linear infinite"):"";
- const sky=ash?"#2a2020":k==="surge"||k==="tsunami"?"#14283a":"#0d2230";
+ const sky=ash?"#2a2020":k==="surge"||k==="tsunami"?"#14283a":"#0a1236";
  let extra="";
  if(ash)extra=`<polygon points="190,120 250,40 310,120" fill="#3b2f2f"/><circle cx="250" cy="40" r="${6+w*14}" fill="#e2572b" opacity=".85"/>`;
  if(k==="slide")extra=`<polygon points="170,40 320,40 320,120" fill="#6b4f3a" style="transform:translate(${Math.round(w*-60)}px,${Math.round(w*20)}px);transition:transform 2.4s"/>`;
- if(k==="quake")extra=`<path d="M0 130 L60 124 L90 136 L150 126 L200 138 L320 128" stroke="#12303f" stroke-width="${1+w*4}" fill="none"/>`;
+ if(k==="quake")extra=`<path d="M0 130 L60 124 L90 136 L150 126 L200 138 L320 128" stroke="#0f1b45" stroke-width="${1+w*4}" fill="none"/>`;
  return `<div class="scene"><svg viewBox="0 0 320 150" role="img" aria-label="Scene">
  <rect width="320" height="150" fill="${sky}"/>${extra}<g class="rain">${rain}</g>
  <g style="${sh}"><rect x="170" y="62" width="120" height="58" fill="#4a5d6b"/><polygon points="162,62 230,30 298,62" fill="#33444f"/><rect x="215" y="86" width="22" height="34" fill="#243540"/>
- <g><circle cx="${over?232:70}" cy="${over?24:92}" r="7" fill="#f2b441"/><rect x="${over?227:65}" y="${over?32:100}" width="10" height="${over?14:20}" rx="4" fill="#e9f1f4"/></g></g>
+ <g><circle cx="${over?232:70}" cy="${over?24:92}" r="7" fill="#f2b441"/><rect x="${over?227:65}" y="${over?32:100}" width="10" height="${over?14:20}" rx="4" fill="#f4f1ea"/></g></g>
  <rect x="0" y="120" width="320" height="30" fill="#1d2e38"/>
  ${wet?`<g class="water" style="transform:translateY(${y}px)"><g class="wave"><rect x="-40" y="132" width="400" height="120" fill="#2f8fa3" opacity=".82"/><path d="M-40 132q10-6 20 0t20 0t20 0t20 0t20 0t20 0t20 0t20 0t20 0t20 0t20 0t20 0t20 0t20 0t20 0t20 0t20 0t20 0t20 0t20 0" fill="none" stroke="#9ccfe0" stroke-width="2"/></g></g>`:""}
  </svg>${over?'<div class="over"><b>GAME OVER</b></div>':""}</div>`;
