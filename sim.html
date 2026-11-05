@@ -9,7 +9,7 @@
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.5 system-ui,"Segoe UI",sans-serif}
 main{max-width:640px;margin:0 auto;padding:20px 16px 48px}
-h1,h2{font-family:Georgia,"Times New Roman",serif;line-height:1.2;margin:.2em 0 .5em}
+h1,h2{font-family:var(--font);line-height:1.2;margin:.2em 0 .5em}
 h1{font-size:2rem}h2{font-size:1.3rem}
 p{margin:.4em 0 1em}
 a{color:var(--amber)}
@@ -19,11 +19,27 @@ a{color:var(--amber)}
 .water{transition:transform 2.4s ease-in-out}
 .wave{animation:wave 3s linear infinite}
 @keyframes shake{0%{transform:translateX(-2px)}50%{transform:translateX(2px)}100%{transform:translateX(-2px)}}
+.nextbtn.alt{background:none;box-shadow:none;border:2px solid #34479a;color:#f4f1ea!important}
+.endbox{position:relative;overflow:hidden;text-align:center;margin:12px 0;padding:18px 14px;border-radius:18px;background:linear-gradient(170deg,#243a8f,#19285f);border:2px solid #f5b335;animation:rise .6s ease-out both}
+.endbox.over{border-color:#d8452f;background:linear-gradient(170deg,#4a1a26,#19285f);animation:rise .6s ease-out both,shake .5s .6s}
+.endbox h2{font-size:1.6rem;margin:.1em 0 .3em}
+.stars span{font-size:2.2rem;color:#34479a;display:inline-block;margin:0 4px}
+.stars span.on{color:#f5b335;animation:pop2 .5s both}
+.av{margin:6px auto;width:max-content}
+.av.safe svg{animation:bob 1.1s ease-in-out infinite}.av.shaken svg{animation:bob 2s ease-in-out infinite}.av.rough svg{transform:rotate(-10deg)}.av.over svg{transform:rotate(80deg)}
+.sit{background:rgba(10,18,54,.55);padding:10px 12px;border-radius:12px;text-align:left}
+.conf{position:absolute;inset:0;pointer-events:none}
+.conf i{position:absolute;top:-14px;width:8px;height:13px;border-radius:2px;animation:fall 2.6s linear infinite}
+@keyframes rise{from{transform:translateY(24px) scale(.96);opacity:0}}
+@keyframes pop2{from{transform:scale(0) rotate(-40deg);opacity:0}60%{transform:scale(1.35)}}
+@keyframes bob{50%{transform:translateY(-6px)}}
+@keyframes fall{to{transform:translateY(340px) rotate(300deg)}}
+@media (prefers-reduced-motion:reduce){.endbox,.stars span.on,.av svg,.conf i{animation:none!important}}
 @keyframes wave{to{transform:translateX(-40px)}}
 .rain line{stroke:#9ccfe0;stroke-width:1;opacity:.5;animation:rain .9s linear infinite}
 @keyframes rain{from{transform:translateY(-20px)}to{transform:translateY(150px)}}
 .over{position:absolute;inset:0;display:grid;place-items:center;background:rgba(10,20,30,.55);opacity:0;animation:fade 1s 2s forwards}
-.over b{font:700 2.2rem Georgia,serif;color:var(--red);letter-spacing:.04em}
+.over b{font:700 2.2rem var(--font);color:var(--red);letter-spacing:.04em}
 @keyframes fade{to{opacity:1}}
 button{font:inherit;color:var(--ink);background:var(--panel);border:2px solid #34479a;border-radius:10px;padding:12px 14px;text-align:left;cursor:pointer;width:100%;margin:6px 0}
 button:hover{border-color:var(--amber)}
@@ -44,10 +60,14 @@ button.lock small{display:block;margin-top:4px;color:var(--amber)}
 <body>
 <main id="app"></main>
 <script src="profile.js"></script>
+<script src="scenarios/registry.js"></script>
 <script>
-const SC={flood:{t:["Habagat Night","Gabi ng Habagat"],ready:1},quake:{t:["Earthquake","Lindol"],ready:1},tsunami:{t:["Tsunami","Tsunami"],ready:1},typhoon:{t:["Typhoon and flash flood","Bagyo at flash flood"],ready:1},surge:{t:["Storm surge","Storm surge"],ready:1},slide:{t:["Landslide","Landslide"],ready:1},volcano:{t:["Volcanic eruption","Pagputok ng bulkan"],ready:1}};
-const U={en:{lg:"Filipino",back:"Back to menu",pick:"Choose a simulation",soon:"Coming soon",demo:"Demo mode: ignore my profile and unlock every option",start:"Begin",dec:"Decision",of:"of",nx:"Next decision",see:"See what you can learn",rw:"Rewind to this decision",chose:"You chose: ",over:"GAME OVER",locked:"Locked: ",deb:"What to take from this",you:"You chose:",best:"Best choice:",lkb:"This option was locked for you. ",fix:"Unlock it",src:"Source: ",fine:"Nothing to fix here. ",rew:" · you rewound here",prep:"Before the next time",again:"Play again",found:"Game overs found: ",note:"Prototype content. Verify every answer against the primary PAGASA, OCD, PHIVOLCS and DOH documents, and have a barangay DRRM officer review it, before public release."},
-tl:{lg:"English",back:"Bumalik sa menu",pick:"Pumili ng simulation",soon:"Paparating pa lang",demo:"Demo mode: huwag pansinin ang aking profile at buksan ang lahat ng opsyon",start:"Simulan",dec:"Desisyon",of:"sa",nx:"Susunod na desisyon",see:"Tingnan ang matututunan",rw:"Bumalik sa desisyong ito",chose:"Pinili ninyo: ",over:"GAME OVER",locked:"Nakasara: ",deb:"Mga dapat tandaan",you:"Pinili ninyo:",best:"Pinakamahusay na pagpili:",lkb:"Nakasara ang opsyong ito para sa inyo. ",fix:"Buksan ito",src:"Pinagmulan: ",fine:"Walang kailangang ayusin dito. ",rew:" · bumalik kayo rito",prep:"Bago ang susunod na pagkakataon",again:"Maglaro muli",found:"Mga game over na natuklasan: ",note:"Prototype na nilalaman. Beripikahin ang bawat sagot sa orihinal na dokumento ng PAGASA, OCD, PHIVOLCS at DOH, at ipasuri sa DRRM officer ng barangay, bago ilabas sa publiko."}};
+const SC=window.SCLIST;
+const U={en:{lg:"Filipino",back:"Back to menu",fin:"Finish",sit:"Where your avatar is now:",dbf:"See the debrief",rwn:"Rewinds used: ",nxt:"Next simulation",pick:"Choose a simulation",soon:"Coming soon",demo:"Demo mode: ignore my profile and unlock every option",start:"Begin",dec:"Decision",of:"of",nx:"Next decision",see:"See what you can learn",rw:"Rewind to this decision",chose:"You chose: ",over:"GAME OVER",locked:"Locked: ",deb:"What to take from this",you:"You chose:",best:"Best choice:",lkb:"This option was locked for you. ",fix:"Unlock it",src:"Source: ",fine:"Nothing to fix here. ",rew:" · you rewound here",prep:"Before the next time",again:"Play again",found:"Game overs found: ",note:"Prototype content. Verify every answer against the primary PAGASA, OCD, PHIVOLCS and DOH documents, and have a barangay DRRM officer review it, before public release."},
+tl:{lg:"English",back:"Bumalik sa menu",fin:"Tapusin",sit:"Kalagayan ng inyong avatar ngayon:",dbf:"Tingnan ang debrief",rwn:"Mga pagbalik: ",nxt:"Susunod na simulation",pick:"Pumili ng simulation",soon:"Paparating pa lang",demo:"Demo mode: huwag pansinin ang aking profile at buksan ang lahat ng opsyon",start:"Simulan",dec:"Desisyon",of:"sa",nx:"Susunod na desisyon",see:"Tingnan ang matututunan",rw:"Bumalik sa desisyong ito",chose:"Pinili ninyo: ",over:"GAME OVER",locked:"Nakasara: ",deb:"Mga dapat tandaan",you:"Pinili ninyo:",best:"Pinakamahusay na pagpili:",lkb:"Nakasara ang opsyong ito para sa inyo. ",fix:"Buksan ito",src:"Pinagmulan: ",fine:"Walang kailangang ayusin dito. ",rew:" · bumalik kayo rito",prep:"Bago ang susunod na pagkakataon",again:"Maglaro muli",found:"Mga game over na natuklasan: ",note:"Prototype na nilalaman. Beripikahin ang bawat sagot sa orihinal na dokumento ng PAGASA, OCD, PHIVOLCS at DOH, at ipasuri sa DRRM officer ng barangay, bago ilabas sa publiko."}};
+const ET={safe:["Safe and sound","Ligtas at buo"],shaken:["Safe, but shaken","Ligtas, pero nayanig"],rough:["Alive, and barely","Buhay, pero halos hindi"],over:["Game over","Game over"]};
+const GEN={safe:["Your avatar is safe, rested and well supplied.","Ligtas, nakapagpahinga at sapat ang suplay ng inyong avatar."],shaken:["Your avatar is safe, but tired and short of a few things.","Ligtas ang inyong avatar, pero pagod at may ilang kulang."],rough:["Your avatar made it, but is hurt or exposed and needs care.","Nakaligtas ang inyong avatar, pero may sugat o nakalantad at kailangan ng pag-aalaga."],over:["Your avatar needs rescue or care. Rewind and try again.","Kailangan ng rescue o pag-aalaga ng inyong avatar. Bumalik at subukan muli."]};
+const AV='<svg viewBox="0 0 40 56" width="46" height="64" aria-hidden="true"><circle cx="20" cy="12" r="9" fill="#f5b335"/><rect x="10" y="23" width="20" height="26" rx="8" fill="#f4f1ea"/></svg>';
 const TIER=[["Wrong","Mali"],["Risky","Delikado"],["Fair","Katamtaman"],["Good","Mabuti"],["Best","Pinakamahusay"]],TC=["#d6453d","#ee8a2b","#f2b441","#8cc084","#4cae7f"];
 const R={red:p=>((p.p1||{}).answers||[])[0]===2,bag:p=>(p.p3||{}).level&&p.p3.level!=="none",hazflood:p=>((p.p1||{}).hazards||[]).includes("flood"),lepto:p=>((p.p1||{}).answers||[])[2]===0,boots:p=>!!((p.p3||{}).flags||{}).boots,
 fault:p=>((p.p1||{}).hazards||[]).includes("fault"),coast:p=>((p.p1||{}).hazards||[]).includes("coast"),slope:p=>((p.p1||{}).hazards||[]).includes("slope"),volcano:p=>((p.p1||{}).hazards||[]).includes("volcano"),
@@ -109,15 +129,26 @@ function ask(){
  ord.map(k=>{const o=d.o[k];return open(o)?`<button data-k="${k}">${x(o.x)}</button>`:`<button class="lock" disabled>${x(o.x)}<small>${u("locked")}${x(o.lk)}</small></button>`}).join("");
  bindLg(ask);app.querySelectorAll("button[data-k]").forEach(b=>b.onclick=()=>pick(+b.dataset.k));window.scrollTo(0,0);
 }
+function endbox(r,msg,extra){
+ const stars=({safe:3,shaken:2,rough:1,over:0})[r],e=(SCEN.ends||{})[r]||GEN[r];
+ let conf="";if(r==="safe")for(let i=0;i<16;i++)conf+=`<i style="left:${(i*6.4+2)%100}%;background:${["#f5b335","#d8532b","#4cae7f","#6b84d8"][i%4]};animation-delay:${(i*.17%1.6).toFixed(2)}s"></i>`;
+ return `<div class="endbox ${r}"><div class="conf">${conf}</div><div class="stars">${[0,1,2].map(n=>`<span class="${n<stars?"on":""}" style="animation-delay:${(.5+n*.35).toFixed(2)}s">★</span>`).join("")}</div><h2>${x(ET[r])}</h2>${msg?`<p>${msg}</p>`:""}<div class="av ${r}">${AV}</div><p class="sit"><b>${u("sit")}</b> ${x(e)}</p>${extra||""}</div>`;
+}
+function finish(){
+ const v=S.picks.map((k,i)=>SCEN.d[i].o[k].tier),a=v.reduce((p,q)=>p+q,0)/(v.length||1),r=a>=3.4?"safe":a>=2.6?"shaken":"rough";
+ app.innerHTML=scene(.1,false)+endbox(r,"",S.rew.length?`<p class="mute">${u("rwn")}${S.rew.length}</p>`:"")+`<button class="go" id="db">${u("dbf")}</button>`;
+ $("#db").onclick=debrief;window.scrollTo(0,0);
+}
 function pick(k){
  const d=SCEN.d[S.i],o=d.o[k];
  if(o.tier===0){addEnd(S.i);
-  app.innerHTML=`${scene(1.1,true)}<h2>${x(o.c)}</h2><p class="mute">${u("chose")}${x(o.x)}</p><button class="go" id="rw">${u("rw")}</button>`;
+  app.innerHTML=scene(1.1,true)+endbox("over",x(o.c),`<p class="mute">${u("chose")}${x(o.x)}</p>`)+`<button class="go" id="rw">${u("rw")}</button><a class="nextbtn alt" href="index.html">${u("back")}</a>`;
   $("#rw").onclick=()=>{if(!S.rew.includes(S.i))S.rew.push(S.i);ask()};return}
  S.picks[S.i]=k;
- app.innerHTML=`${badge(o.tier)}${scene(d.w,false)}<h2>${x(o.c)}</h2><button class="go" id="nx">${S.i<SCEN.d.length-1?u("nx"):u("see")}</button>`;
- $("#nx").onclick=()=>{S.i++;S.i<SCEN.d.length?ask():debrief()};
+ app.innerHTML=`${badge(o.tier)}${scene(d.w,false)}<h2>${x(o.c)}</h2><button class="go" id="nx">${S.i<SCEN.d.length-1?u("nx"):u("fin")}</button>`;
+ $("#nx").onclick=()=>{S.i++;S.i<SCEN.d.length?ask():finish()};
 }
+const NI=()=>{const k=Object.keys(SC);return k[(k.indexOf(id)+1)%k.length]};
 function debrief(){
  let h=head()+`<h1>${u("deb")}</h1>`;
  SCEN.d.forEach((d,i)=>{const o=d.o[S.picks[i]],b=d.o.find(y=>y.tier===4),rw=S.rew.includes(i),lb=!open(b);
@@ -125,7 +156,7 @@ function debrief(){
   if(o.tier<4){h+=`<p><b>${u("best")}</b> ${x(b.x)}</p>`+(lb?`<p>${u("lkb")}${x(b.lk)} <a href="${b.ph}">${u("fix")}</a></p>`:"")+`<p>${x(d.why)}</p><small>${u("src")}${d.src}</small>`}
   else h+=`<small>${u("fine")}${x(d.why)}</small>`;
   h+=`</div>`});
- h+=`<h2>${u("prep")}</h2><div class="card">${SCEN.next.map(n=>`<p>${x(n)}</p>`).join("")}</div><button class="go" id="again">${u("again")}</button><p class="mute">${u("note")}</p>`;
+ h+=`<h2>${u("prep")}</h2><div class="card">${SCEN.next.map(n=>`<p>${x(n)}</p>`).join("")}</div><button class="go" id="again">${u("again")}</button><a class="nextbtn" href="sim.html?s=${NI()}">${u("nxt")}: ${x(SC[NI()].t)} ▶</a><a class="nextbtn alt" href="index.html">${u("back")}</a><p class="mute">${u("note")}</p>`;
  app.innerHTML=h;bindLg(debrief);$("#again").onclick=home;window.scrollTo(0,0);
 }
 if(!id||!SC[id]||!SC[id].ready)chooser();
