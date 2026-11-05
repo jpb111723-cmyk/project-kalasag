@@ -21,7 +21,7 @@ button.sm{float:right;margin:0;padding:6px 12px;background:var(--panel);color:va
 .chip{display:flex;gap:8px;align-items:center;padding:8px 12px;border-radius:99px;background:#0a1236;border:2px solid var(--line);cursor:pointer;font-size:.9rem}
 .chip input{width:18px;height:18px;accent-color:var(--amber)}
 .chip.on{border-color:var(--amber)}
-.dnd{display:grid;gap:12px}
+.dnd{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}.dnd>*{min-width:0}
 .bagp{position:sticky;top:48px;z-index:4;display:flex;gap:10px;align-items:center;padding:8px 10px;border-radius:16px;background:rgba(10,18,54,.96);border:2px solid var(--line);transition:box-shadow .2s,border-color .2s}
 .bagp.over{border-color:var(--amber);box-shadow:0 0 0 4px rgba(245,179,53,.4)}
 .bagp.ready{border-color:var(--amber);box-shadow:0 0 22px rgba(245,179,53,.65)}
@@ -54,7 +54,7 @@ button.sm{float:right;margin:0;padding:6px 12px;background:var(--panel);color:va
 .mlbl{margin:3px 0 6px;font:700 .8rem var(--font);color:var(--amber)}
 @media (min-width:760px){
  .sp{width:100%}
- .dnd{grid-template-columns:1fr 250px;align-items:start}
+ .dnd{grid-template-columns:minmax(0,1fr) 250px;align-items:start}
  .bagp{order:2;flex-direction:column;top:56px}.bagwrap{width:190px}
  .strip{flex-wrap:wrap;overflow:visible;justify-content:center}
  .shelf{grid-auto-flow:row;grid-template-columns:repeat(4,78px);overflow:visible;touch-action:auto}
