@@ -11,7 +11,7 @@ window.KP={
   agree(){try{localStorage.setItem("kalasag_agreed","1")}catch(e){}window.name="kalasag_ok"},
   shield(h){return`<svg width="${h*.89}" height="${h}" viewBox="0 0 32 36" aria-hidden="true"><path d="M16 1L2 6v12c0 9 6 15 14 17z" fill="#2f45a8"/><path d="M16 1l14 5v12c0 9-6 15-14 17z" fill="#d8532b"/><path d="M16 1L2 6v12c0 9 6 15 14 17 8-2 14-8 14-17V6z" fill="none" stroke="#f5b335" stroke-width="2"/><rect x="14" y="9" width="4" height="14" rx=".8" fill="#fff"/><rect x="9" y="14" width="14" height="4" rx=".8" fill="#fff"/></svg>`}
 };
-/* KALASAG refresh guard: a reload erases all site data and sends the user back to the start notice. */
+/* KALASAG refresh guard: a refresh asks "start over?" and, if confirmed, erases all site data and returns to the start notice. */
 (function(){
   const wipe=function(){
     try{Object.keys(localStorage).forEach(function(k){if(k.indexOf("kalasag")===0)localStorage.removeItem(k)})}catch(e){}
@@ -19,9 +19,11 @@ window.KP={
     window.name="";
   };
   window.KPwipe=wipe;
-  let reloaded=false;
+  let reloaded=false,confirmed=false;
   try{const n=performance.getEntriesByType("navigation")[0];reloaded=n?n.type==="reload":(performance.navigation&&performance.navigation.type===1)}catch(e){}
-  if(reloaded)wipe();
+  try{confirmed=sessionStorage.getItem("kalasag_rc")==="1";sessionStorage.removeItem("kalasag_rc")}catch(e){}
+  if(reloaded&&confirmed)wipe();
+  window.KPask=reloaded&&!confirmed;
 })();
 (function(){
   const home=/(^|\/)(index\.html)?$/.test(location.pathname);
@@ -47,44 +49,28 @@ window.KP={
   }
 })();
 
-/* Refresh warning: a drop-down confirm for F5 / Ctrl+R / Cmd+R, plus the browser's own prompt for other ways of refreshing. */
+/* Refresh confirm: the browser's own OK / Cancel dialog, before a keyboard refresh (F5, Ctrl+R, Cmd+R) or right after any other refresh. Nothing is erased until the user presses OK. */
 (function(){
   const T={
-    en:{t:"Refresh and start over?",b:"Refreshing erases everything you have done on this site and takes you back to the start notice.",stay:"Stay here",go:"Refresh and erase"},
-    tl:{t:"I-refresh at magsimula ulit?",b:"Buburahin ng pag-refresh ang lahat ng ginawa mo sa site na ito at ibabalik ka sa unang abiso.",stay:"Manatili rito",go:"I-refresh at burahin"}
+    en:{pre:"Refresh and start over?\n\nRefreshing erases everything you have done on this site and takes you back to the start notice.\n\nOK = refresh and erase\nCancel = stay here",
+        post:"You refreshed the page. Start over?\n\nStarting over erases everything you have done on this site and takes you back to the start notice.\n\nOK = erase and start over\nCancel = keep my progress"},
+    tl:{pre:"I-refresh at magsimula ulit?\n\nBuburahin ng pag-refresh ang lahat ng ginawa mo sa site na ito at ibabalik ka sa unang abiso.\n\nOK = i-refresh at burahin\nCancel = manatili rito",
+        post:"Nag-refresh ka ng page. Magsimula ulit?\n\nBuburahin ng pagsisimula ulit ang lahat ng ginawa mo sa site na ito at ibabalik ka sa unang abiso.\n\nOK = burahin at magsimula ulit\nCancel = panatilihin ang progress ko"}
   };
-  let bar=null,lastFocus=null,okToLeave=false,lastClick=0;
-  const lang=function(){const l=KP.lang();return T[l]?T[l]:(l==="fil"?T.tl:T.en)};
-  const css=document.createElement("style");
-  css.textContent=".rwarn{position:fixed;left:0;right:0;top:0;z-index:100;transform:translateY(-110%);transition:transform .25s ease;padding:max(12px,env(safe-area-inset-top)) 14px 14px;background:#19285f;border-bottom:3px solid #f5b335;box-shadow:0 12px 34px rgba(0,0,0,.55)}"+
-  ".rwarn.on{transform:none}.rwarn .in{max-width:640px;margin:0 auto}.rwarn h2{margin:0 0 4px;font-size:1.15rem;color:#f5b335}.rwarn p{margin:0 0 10px;color:#f4f1ea}"+
-  ".rwarn .rw{display:flex;gap:10px;flex-wrap:wrap}.rwarn button{flex:1 1 150px;margin:0;padding:12px 14px;border-radius:12px;font:inherit;font-weight:800;cursor:pointer}"+
-  ".rwarn .stay{background:#0f1b45;color:#f4f1ea;border:2px solid #34479a}.rwarn .go{background:linear-gradient(180deg,#ffd35c,#f5a31d);color:#0f1b45;border:0}"+
-  "@media (prefers-reduced-motion:reduce){.rwarn{transition:none}}@media print{.rwarn{display:none}}";
-  document.head.appendChild(css);
-  function close(){if(!bar)return;bar.classList.remove("on");const b=bar;bar=null;setTimeout(function(){b.remove()},300);if(lastFocus&&lastFocus.focus)lastFocus.focus()}
-  function open(){
-    if(bar)return;const L=lang();lastFocus=document.activeElement;
-    bar=document.createElement("div");bar.className="rwarn";bar.setAttribute("role","alertdialog");bar.setAttribute("aria-modal","true");bar.setAttribute("aria-labelledby","rwt");bar.setAttribute("aria-describedby","rwb");
-    bar.innerHTML='<div class="in"><h2 id="rwt"></h2><p id="rwb"></p><div class="rw"><button type="button" class="stay"></button><button type="button" class="go"></button></div></div>';
-    bar.querySelector("h2").textContent=L.t;bar.querySelector("p").textContent=L.b;
-    const stay=bar.querySelector(".stay"),go=bar.querySelector(".go");stay.textContent=L.stay;go.textContent=L.go;
-    stay.onclick=close;
-    go.onclick=function(){okToLeave=true;KPwipe();location.reload()};
-    document.body.appendChild(bar);
-    requestAnimationFrame(function(){bar&&bar.classList.add("on");stay.focus()});
-  }
+  const say=function(m){return (T[KP.lang()]||T.en)[m]};
   document.addEventListener("keydown",function(e){
-    if(bar&&e.key==="Escape"){close();return}
     const k=(e.key||"").toLowerCase();
     if(k==="f5"||((e.ctrlKey||e.metaKey)&&k==="r")){
       if(!KP.agreed())return;
-      e.preventDefault();open();
+      e.preventDefault();
+      if(confirm(say("pre"))){try{sessionStorage.setItem("kalasag_rc","1")}catch(x){}location.reload()}
     }
   },true);
-  document.addEventListener("click",function(){lastClick=Date.now()},true);
-  window.addEventListener("beforeunload",function(e){
-    if(okToLeave||!KP.agreed()||Date.now()-lastClick<2000)return;
-    e.preventDefault();e.returnValue="";
-  });
+  function after(){
+    if(!(window.KPask&&KP.agreed()))return;
+    requestAnimationFrame(function(){setTimeout(function(){
+      if(confirm(say("post"))){KPwipe();location.replace("index.html")}
+    },60)});
+  }
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",after);else after();
 })();
