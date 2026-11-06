@@ -38,8 +38,8 @@ a{color:var(--amber)}
 @keyframes wave{to{transform:translateX(-40px)}}
 .rain line{stroke:#9ccfe0;stroke-width:1;opacity:.5;animation:rain .9s linear infinite}
 @keyframes rain{from{transform:translateY(-20px)}to{transform:translateY(150px)}}
-.over{position:absolute;inset:0;display:grid;place-items:center;background:rgba(10,20,30,.55);opacity:0;animation:fade 1s 2s forwards}
-.over b{font:700 2.2rem var(--font);color:var(--red);letter-spacing:.04em}
+.sover{position:absolute;inset:0;display:grid;place-items:center;background:rgba(10,20,30,.55);opacity:0;animation:fade 1s 2s forwards;pointer-events:none}
+.sover b{font:700 2.2rem var(--font);color:var(--red);letter-spacing:.04em}
 @keyframes fade{to{opacity:1}}
 button{font:inherit;color:var(--ink);background:var(--panel);border:2px solid #34479a;border-radius:10px;padding:12px 14px;text-align:left;cursor:pointer;width:100%;margin:6px 0}
 button:hover{border-color:var(--amber)}
@@ -48,23 +48,27 @@ button.go{background:var(--amber);color:#0f1b45;border-color:var(--amber);font-w
 .card{background:var(--panel);border-radius:12px;padding:12px 14px;margin:10px 0}
 .card small,.mute{color:var(--mute)}
 .mute{font-size:.9rem}
-@media (prefers-reduced-motion:reduce){.wave,.rain line{animation:none}.water{transition:none}.over{animation:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){.wave,.rain line{animation:none}.water{transition:none}.sover{animation:none;opacity:1}}
 
 .sm{float:right;width:auto;margin:0;padding:6px 12px;text-align:center}
 label.i{display:flex;gap:10px;margin:12px 0;cursor:pointer;align-items:flex-start}
 input[type=checkbox]{width:22px;height:22px;flex:none;accent-color:#f2b441}
 button.lock{opacity:.55;cursor:not-allowed;border-style:dashed}
 button.lock small{display:block;margin-top:4px;color:var(--amber)}
+.tmr{display:flex;align-items:center;gap:10px;margin:8px 0}.tb{flex:1;height:14px;background:#0a1236;border-radius:99px;overflow:hidden;border:1px solid #34479a}.tb i{display:block;height:100%;background:#f5b335;transform-origin:left}
+.tmr span{font:700 1.05rem var(--font);min-width:3.4em;text-align:right}.tmr.hot .tb i{background:#d8452f}.tmr.hot span{color:#ff8a7a;animation:tpulse .5s infinite alternate}@keyframes tpulse{to{transform:scale(1.18)}}
+@media (prefers-reduced-motion:reduce){.tmr.hot span{animation:none}}
 </style>
 </head>
 <body>
 <main id="app"></main>
 <script src="profile.js"></script>
 <script src="scenarios/registry.js"></script>
+<script src="scenes.js"></script>
 <script>
 const SC=window.SCLIST;
-const U={en:{lg:"Filipino",back:"Back to menu",fin:"Finish",sit:"Where your avatar is now:",dbf:"See the debrief",rwn:"Rewinds used: ",nxt:"Next simulation",pick:"Choose a simulation",soon:"Coming soon",demo:"Demo mode: ignore my profile and unlock every option",start:"Begin",dec:"Decision",of:"of",nx:"Next decision",see:"See what you can learn",rw:"Rewind to this decision",chose:"You chose: ",over:"GAME OVER",locked:"Locked: ",deb:"What to take from this",you:"You chose:",best:"Best choice:",lkb:"This option was locked for you. ",fix:"Unlock it",src:"Source: ",fine:"Nothing to fix here. ",rew:" · you rewound here",prep:"Before the next time",again:"Play again",found:"Game overs found: ",note:"Prototype content. Verify every answer against the primary PAGASA, OCD, PHIVOLCS and DOH documents, and have a barangay DRRM officer review it, before public release."},
-tl:{lg:"English",back:"Bumalik sa menu",fin:"Tapusin",sit:"Kalagayan ng inyong avatar ngayon:",dbf:"Tingnan ang debrief",rwn:"Mga pagbalik: ",nxt:"Susunod na simulation",pick:"Pumili ng simulation",soon:"Paparating pa lang",demo:"Demo mode: huwag pansinin ang aking profile at buksan ang lahat ng opsyon",start:"Simulan",dec:"Desisyon",of:"sa",nx:"Susunod na desisyon",see:"Tingnan ang matututunan",rw:"Bumalik sa desisyong ito",chose:"Pinili ninyo: ",over:"GAME OVER",locked:"Nakasara: ",deb:"Mga dapat tandaan",you:"Pinili ninyo:",best:"Pinakamahusay na pagpili:",lkb:"Nakasara ang opsyong ito para sa inyo. ",fix:"Buksan ito",src:"Pinagmulan: ",fine:"Walang kailangang ayusin dito. ",rew:" · bumalik kayo rito",prep:"Bago ang susunod na pagkakataon",again:"Maglaro muli",found:"Mga game over na natuklasan: ",note:"Prototype na nilalaman. Beripikahin ang bawat sagot sa orihinal na dokumento ng PAGASA, OCD, PHIVOLCS at DOH, at ipasuri sa DRRM officer ng barangay, bago ilabas sa publiko."}};
+const U={en:{lg:"Filipino",back:"Back to menu",fin:"Finish",sit:"Where your avatar is now:",dbf:"See the debrief",rwn:"Rewinds used: ",nxt:"Next simulation",pick:"Choose a simulation",soon:"Coming soon",demo:"Demo mode: ignore my profile and unlock every option",tm:"Some decisions are timed. When the clock runs out, the situation moves on without you.",lm:"You ran out of time. In a real emergency, waiting is also a choice, and the situation does not wait for you.",start:"Begin",dec:"Decision",of:"of",nx:"Next decision",see:"See what you can learn",rw:"Rewind to this decision",chose:"You chose: ",over:"GAME OVER",locked:"Locked: ",deb:"What to take from this",you:"You chose:",best:"Best choice:",lkb:"This option was locked for you. ",fix:"Unlock it",src:"Source: ",fine:"Nothing to fix here. ",rew:" · you rewound here",prep:"Before the next time",again:"Play again",found:"Game overs found: ",note:"Prototype content. Verify every answer against the primary PAGASA, OCD, PHIVOLCS and DOH documents, and have a barangay DRRM officer review it, before public release."},
+tl:{lg:"English",back:"Bumalik sa menu",fin:"Tapusin",sit:"Kalagayan ng inyong avatar ngayon:",dbf:"Tingnan ang debrief",rwn:"Mga pagbalik: ",nxt:"Susunod na simulation",pick:"Pumili ng simulation",soon:"Paparating pa lang",demo:"Demo mode: huwag pansinin ang aking profile at buksan ang lahat ng opsyon",tm:"May mga desisyong may oras. Kapag naubos ang oras, magpapatuloy ang sitwasyon nang wala kayo.",lm:"Naubos ang oras ninyo. Sa totoong emergency, pagpili rin ang paghihintay, at hindi naghihintay ang sitwasyon.",start:"Simulan",dec:"Desisyon",of:"sa",nx:"Susunod na desisyon",see:"Tingnan ang matututunan",rw:"Bumalik sa desisyong ito",chose:"Pinili ninyo: ",over:"GAME OVER",locked:"Nakasara: ",deb:"Mga dapat tandaan",you:"Pinili ninyo:",best:"Pinakamahusay na pagpili:",lkb:"Nakasara ang opsyong ito para sa inyo. ",fix:"Buksan ito",src:"Pinagmulan: ",fine:"Walang kailangang ayusin dito. ",rew:" · bumalik kayo rito",prep:"Bago ang susunod na pagkakataon",again:"Maglaro muli",found:"Mga game over na natuklasan: ",note:"Prototype na nilalaman. Beripikahin ang bawat sagot sa orihinal na dokumento ng PAGASA, OCD, PHIVOLCS at DOH, at ipasuri sa DRRM officer ng barangay, bago ilabas sa publiko."}};
 const ET={safe:["Safe and sound","Ligtas at buo"],shaken:["Safe, but shaken","Ligtas, pero nayanig"],rough:["Alive, and barely","Buhay, pero halos hindi"],over:["Game over","Game over"]};
 const GEN={safe:["Your avatar is safe, rested and well supplied.","Ligtas, nakapagpahinga at sapat ang suplay ng inyong avatar."],shaken:["Your avatar is safe, but tired and short of a few things.","Ligtas ang inyong avatar, pero pagod at may ilang kulang."],rough:["Your avatar made it, but is hurt or exposed and needs care.","Nakaligtas ang inyong avatar, pero may sugat o nakalantad at kailangan ng pag-aalaga."],over:["Your avatar needs rescue or care. Rewind and try again.","Kailangan ng rescue o pag-aalaga ng inyong avatar. Bumalik at subukan muli."]};
 const AV='<svg viewBox="0 0 40 56" width="46" height="64" aria-hidden="true"><circle cx="20" cy="12" r="9" fill="#f5b335"/><rect x="10" y="23" width="20" height="26" rx="8" fill="#f4f1ea"/></svg>';
@@ -93,23 +97,15 @@ const okey=()=>id==="flood"?"kalasag_over":"kalasag_over_"+id;
 const ends=()=>{try{return JSON.parse(localStorage.getItem(okey())||"[]")}catch(e){return[]}};
 const addEnd=i=>{try{const a=ends();if(!a.includes(i)){a.push(i);localStorage.setItem(okey(),JSON.stringify(a))}}catch(e){}};
 const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
-function scene(w,over){
- const k=(window.SCEN&&SCEN.kind)||"flood",wet=["flood","typhoon","tsunami","surge"].includes(k),rainy=["flood","typhoon"].includes(k),ash=k==="volcano";
- let rain="";if(rainy||ash)for(let i=0;i<16;i++)rain+=`<line x1="${i*21+5}" y1="0" x2="${i*21+(k==="typhoon"?-8:2)}" y2="12" style="animation-delay:${-(i*.17)%.9}s;${ash?"stroke:#b8b8b8;animation-duration:2.2s":""}"/>`;
- const y=-Math.round(w*72),sh=k==="quake"?(over?"":"animation:shake .35s linear infinite"):"";
- const sky=ash?"#2a2020":k==="surge"||k==="tsunami"?"#14283a":"#0a1236";
- let extra="";
- if(ash)extra=`<polygon points="190,120 250,40 310,120" fill="#3b2f2f"/><circle cx="250" cy="40" r="${6+w*14}" fill="#e2572b" opacity=".85"/>`;
- if(k==="slide")extra=`<polygon points="170,40 320,40 320,120" fill="#6b4f3a" style="transform:translate(${Math.round(w*-60)}px,${Math.round(w*20)}px);transition:transform 2.4s"/>`;
- if(k==="quake")extra=`<path d="M0 130 L60 124 L90 136 L150 126 L200 138 L320 128" stroke="#0f1b45" stroke-width="${1+w*4}" fill="none"/>`;
- return `<div class="scene"><svg viewBox="0 0 320 150" role="img" aria-label="Scene">
- <rect width="320" height="150" fill="${sky}"/>${extra}<g class="rain">${rain}</g>
- <g style="${sh}"><rect x="170" y="62" width="120" height="58" fill="#4a5d6b"/><polygon points="162,62 230,30 298,62" fill="#33444f"/><rect x="215" y="86" width="22" height="34" fill="#243540"/>
- <g><circle cx="${over?232:70}" cy="${over?24:92}" r="7" fill="#f2b441"/><rect x="${over?227:65}" y="${over?32:100}" width="10" height="${over?14:20}" rx="4" fill="#f4f1ea"/></g></g>
- <rect x="0" y="120" width="320" height="30" fill="#1d2e38"/>
- ${wet?`<g class="water" style="transform:translateY(${y}px)"><g class="wave"><rect x="-40" y="132" width="400" height="120" fill="#2f8fa3" opacity=".82"/><path d="M-40 132q10-6 20 0t20 0t20 0t20 0t20 0t20 0t20 0t20 0t20 0t20 0t20 0t20 0t20 0t20 0t20 0t20 0t20 0t20 0t20 0t20 0" fill="none" stroke="#9ccfe0" stroke-width="2"/></g></g>`:""}
- </svg>${over?'<div class="over"><b>GAME OVER</b></div>':""}</div>`;
-}
+const hasBag=()=>{const l=(KP.get().p3||{}).level;return !!l&&l!=="none"};
+function scene(w,over,pw){return KS.scene((window.SCEN&&SCEN.kind)||"flood",w,over,hasBag(),pw)}
+/* Time pressure, in seconds per decision (0 = untimed). Fast hazards get short clocks. */
+const LIM={flood:[30,25,20,0,0],quake:[10,15,12,0],tsunami:[12,12,0,0],typhoon:[0,25,12,0],surge:[0,0,20,0],slide:[0,20,10,20],volcano:[0,20,0,20]};
+const TL=()=>(LIM[id]||[]).some(v=>v>0);
+const stopT=()=>{try{clearInterval(S&&S.tm)}catch(e){}};
+function late(){stopT();addEnd(S.i);
+ app.innerHTML=scene(1.1,true)+endbox("over",u("lm"),"")+`<button class="go" id="rw">${u("rw")}</button><a class="nextbtn alt" href="index.html">${u("back")}</a>`;
+ $("#rw").onclick=()=>{if(!S.rew.includes(S.i))S.rew.push(S.i);ask()};window.scrollTo(0,0)}
 
 const badge=t=>`<span class="chip" style="background:${TC[t]}">${TIER[t][li()]}</span>`;
 const head=()=>`<button class="sm" id="lg">${u("lg")}</button><p class="mute"><a href="index.html">${u("back")}</a></p>`;
@@ -119,15 +115,17 @@ function chooser(){
  bindLg(chooser);
 }
 function home(){
- app.innerHTML=head()+`<h1>${x(SCEN.title)}</h1><p>${x(SCEN.intro)}</p>${scene(.3,false)}<label class="i"><input type="checkbox" id="dm" ${demo?"checked":""}><span>${u("demo")}</span></label><button class="go" id="go">${u("start")}</button><p class="mute">${u("found")}${ends().length} / ${SCEN.d.length}</p>`;
- bindLg(home);$("#dm").onchange=e=>{demo=e.target.checked};
+ app.innerHTML=head()+`<h1>${x(SCEN.title)}</h1><p>${x(SCEN.intro)}</p>${scene(.3,false)}${TL()?`<p class="mute">⏱ ${u("tm")}</p>`:""}<button class="go" id="go">${u("start")}</button><p class="mute">${u("found")}${ends().length} / ${SCEN.d.length}</p>`;
+ bindLg(home);
  $("#go").onclick=()=>{S={i:0,picks:[],rew:[]};ask()};
 }
-function ask(){
- const d=SCEN.d[S.i],ord=shuffle(d.o.map((_,k)=>k));
- app.innerHTML=head()+`<span class="chip" style="background:${d.c}">${d.t}</span> <span class="mute">${u("dec")} ${S.i+1} ${u("of")} ${SCEN.d.length}</span>${scene(S.i?SCEN.d[S.i-1].w:.2,false)}<h2>${x(d.q)}</h2>`+
+function ask(keep){
+ stopT();const d=SCEN.d[S.i],lim=(LIM[id]||[])[S.i]||0;
+ if(!keep||!S.ord){S.ord=shuffle(d.o.map((_,k)=>k));S.dl=lim?Date.now()+lim*1000:0}const ord=S.ord;
+ app.innerHTML=head()+`<span class="chip" style="background:${d.c}">${d.t}</span> <span class="mute">${u("dec")} ${S.i+1} ${u("of")} ${SCEN.d.length}</span>${S.dl?`<div class="tmr" id="tmr" role="timer"><div class="tb"><i id="tbi"></i></div><span id="tsec"></span></div>`:""}${scene(S.i?SCEN.d[S.i-1].w:.2,false)}<h2>${x(d.q)}</h2>`+
  ord.map(k=>{const o=d.o[k];return open(o)?`<button data-k="${k}">${x(o.x)}</button>`:`<button class="lock" disabled>${x(o.x)}<small>${u("locked")}${x(o.lk)}</small></button>`}).join("");
- bindLg(ask);app.querySelectorAll("button[data-k]").forEach(b=>b.onclick=()=>pick(+b.dataset.k));window.scrollTo(0,0);
+ bindLg(()=>ask(true));app.querySelectorAll("button[data-k]").forEach(b=>b.onclick=()=>pick(+b.dataset.k));window.scrollTo(0,0);
+ if(S.dl){const tot=lim*1000,tick=()=>{const left=S.dl-Date.now();if(left<=0)return late();const f=left/tot,t=$("#tmr");if(!t)return;$("#tbi").style.transform="scaleX("+f+")";$("#tsec").textContent=Math.ceil(left/1000)+" s";t.classList.toggle("hot",f<.34)};tick();S.tm=setInterval(tick,100)}
 }
 function endbox(r,msg,extra){
  const stars=({safe:3,shaken:2,rough:1,over:0})[r],e=(SCEN.ends||{})[r]||GEN[r];
@@ -140,12 +138,12 @@ function finish(){
  $("#db").onclick=debrief;window.scrollTo(0,0);
 }
 function pick(k){
- const d=SCEN.d[S.i],o=d.o[k];
+ stopT();const d=SCEN.d[S.i],o=d.o[k];
  if(o.tier===0){addEnd(S.i);
   app.innerHTML=scene(1.1,true)+endbox("over",x(o.c),`<p class="mute">${u("chose")}${x(o.x)}</p>`)+`<button class="go" id="rw">${u("rw")}</button><a class="nextbtn alt" href="index.html">${u("back")}</a>`;
   $("#rw").onclick=()=>{if(!S.rew.includes(S.i))S.rew.push(S.i);ask()};return}
  S.picks[S.i]=k;
- app.innerHTML=`${badge(o.tier)}${scene(d.w,false)}<h2>${x(o.c)}</h2><button class="go" id="nx">${S.i<SCEN.d.length-1?u("nx"):u("fin")}</button>`;
+ app.innerHTML=`${badge(o.tier)}${scene(d.w,false,S.i?SCEN.d[S.i-1].w:.2)}<h2>${x(o.c)}</h2><button class="go" id="nx">${S.i<SCEN.d.length-1?u("nx"):u("fin")}</button>`;
  $("#nx").onclick=()=>{S.i++;S.i<SCEN.d.length?ask():finish()};
 }
 const NI=()=>{const k=Object.keys(SC);return k[(k.indexOf(id)+1)%k.length]};
